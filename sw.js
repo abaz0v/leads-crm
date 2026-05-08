@@ -1,5 +1,9 @@
-const CACHE = 'leads-crm-v1';
-const ASSETS = ['index.html', 'manifest.json'];
+const CACHE = 'leads-crm-v2';
+const ASSETS = [
+  '/leads-crm/',
+  '/leads-crm/index.html',
+  '/leads-crm/manifest.json'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {}));
@@ -15,6 +19,7 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request)).catch(() => caches.match('index.html'))
+    caches.match(e.request).then(r => r || fetch(e.request))
+      .catch(() => caches.match('/leads-crm/index.html'))
   );
 });
