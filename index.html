@@ -31,6 +31,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .errmsg{color:var(--red);font-size:12px;text-align:center;margin-top:8px;display:none}
 /* APP */
 #app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+#app.scrolled-down .nav{display:none}
+#app.scrolled-down .svctb{display:none}
+#app.scrolled-down .lgnd{display:none}
+#app.scrolled-down .tbar{display:none}
+#app.scrolled-down .og-toolbar{display:none}
 #app.h{display:none}
 /* NAV */
 .nav{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0}
@@ -185,6 +190,8 @@ tbody tr:hover td.s0,tbody tr:hover td.s1{background:#131f35}
 .fl{display:flex;align-items:center;gap:8px}
 .mla{margin-left:auto}
 hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
+
+@media(hover:hover) and (pointer:fine){html{zoom:1.25}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -239,10 +246,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
         <button class="btn sm" onclick="openForm(null)">+ Запис</button>
       </div>
       <div class="tw"><table><thead id="shead"></thead><tbody id="sbody"></tbody></table></div>
-      <div class="lgnd">
-        <span><span class="ldot" style="background:var(--yellow)"></span>Дублікат ніку в цьому казино</span>
-        <span><span class="ldot" style="background:var(--red)"></span>Чорний список</span>
-      </div>
+
       <div class="strip" id="sstrip"></div>
       <div class="tbar" id="tbar"></div>
     </div>
@@ -320,10 +324,12 @@ const db={
     if(tbl==='entries'){
       const{id:_,...data}=obj;
       const rows=await _sbFetch('entries',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({data})})||[];
+      _sbFetch('settings',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:'_ts',value:Date.now()})});
       return rows[0]?.id;
     }
     if(tbl==='blacklist'){
       const rows=await _sbFetch('blacklist',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(obj)})||[];
+      _sbFetch('settings',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:'_ts',value:Date.now()})});
       return rows[0]?.id;
     }
   },
@@ -331,6 +337,7 @@ const db={
     if(tbl==='entries'){
       const{id,...data}=obj;
       await _sbFetch('entries?id=eq.'+id,{method:'PATCH',body:JSON.stringify({data})});
+      _sbFetch('settings',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:'_ts',value:Date.now()})});
     }
     if(tbl==='blacklist'){
       const{id,...rest}=obj;
@@ -365,6 +372,7 @@ async function cfg(k){
 }
 async function setCfg(k,v){
   await _sbFetch('settings',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:k,value:v})});
+  if(k!=='_ts') _sbFetch('settings',{method:'POST',headers:{'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key:'_ts',value:Date.now()})});
 }
 async function cfgAll(){
   const rows=await _sbFetch('settings?select=key,value')||[];
@@ -1172,30 +1180,27 @@ document.addEventListener('touchmove',()=>{clearTimeout(_lpTimer);_lpTimer=null;
 document.addEventListener('click',e=>{if(!e.target.closest('#ctx'))closeCtx();});
 document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
 
-// ── MOBILE: hide nav-r1 on scroll down in table ──
+// ── MOBILE: hide all top UI on scroll down ──
 (function(){
-  let _lastY=0,_navUp=false,_timer=null;
-  function applyNav(hide){
-    const nr=document.getElementById('navr1');
-    if(!nr||_navUp===hide)return;
-    _navUp=hide;
-    nr.style.display=hide?'none':'flex';
+  let _lastY=0,_hidden=false;
+  function setHidden(hide){
+    if(_hidden===hide)return;
+    _hidden=hide;
+    document.getElementById('app').classList.toggle('scrolled-down',hide);
   }
-  function onTWScroll(){
-    const tw=document.querySelector('.tw');if(!tw)return;
-    const y=tw.scrollTop;
-    if(y>_lastY+8&&y>50) applyNav(true);
-    else if(y<_lastY-8) applyNav(false);
+  function onTWScroll(e){
+    const y=e.target.scrollTop;
+    if(y>_lastY+12&&y>60) setHidden(true);
+    else if(y<_lastY-12) setHidden(false);
     _lastY=y;
   }
   function attachTW(){
     const tw=document.querySelector('.tw');
-    if(tw){tw.addEventListener('scroll',onTWScroll,{passive:true});}
-    else{setTimeout(attachTW,600);}
+    if(tw){tw.removeEventListener('scroll',onTWScroll);tw.addEventListener('scroll',onTWScroll,{passive:true});}
+    else setTimeout(attachTW,600);
   }
   attachTW();
-  // Also re-attach after view changes (tab switches)
-  document.addEventListener('click',()=>{setTimeout(attachTW,400);},{passive:true});
+  document.addEventListener('click',()=>setTimeout(attachTW,400),{passive:true});
 })();
 
 const SEED_BL=['@vika437891','@utther231','@valdiset','@vlgograd','@versach28','@olkakush','@dolmatov_vll','@woro2k1','@goykingggg','@katepro78','@katabaranec','@ok9oksanka','@bodyks','@deontey666','@burlak777777','@spasibo1994','@nazazik21'];
@@ -1352,15 +1357,14 @@ function initRealtime(){
   connect();
 }
 
-// Polling fallback (every 12s) for settings changes (rate, ставка etc.)
-let _pollHash='';
+// Polling fallback — checks _ts timestamp every 5s
+let _pollTs=0;
 async function pollSync(){
   try{
-    const r=await _sbFetch('entries?select=id&order=id.desc&limit=1&created_at=not.is.null')||[];
-    const s=await _sbFetch('settings?select=key,value&key=eq._ts')||[];
-    const h=JSON.stringify(r)+JSON.stringify(s);
-    if(_pollHash&&h!==_pollHash) refreshCurrentView();
-    _pollHash=h;
+    const rows=await _sbFetch('settings?select=value&key=eq._ts')||[];
+    const ts=rows[0]?.value||0;
+    if(_pollTs&&ts!==_pollTs){refreshCurrentView();}
+    _pollTs=ts;
   }catch(ex){}
 }
 
@@ -1368,7 +1372,7 @@ async function init(){
   await fetchUsdRate();
   await seedBlacklist();
   initRealtime();
-  setInterval(pollSync,12000);
+  setInterval(pollSync,5000);
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 init();
