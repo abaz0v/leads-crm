@@ -39,15 +39,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 #app.h{display:none}
 /* NAV */
 .nav{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0}
-.nav-wrap{display:flex;align-items:center;background:var(--card)}
+.nav-wrap{display:flex;align-items:center;background:var(--card);overflow:hidden;max-width:100vw}
 .nav-r1{display:flex;align-items:center;padding:7px 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px;flex:1;min-width:0}
 .nav-r1::-webkit-scrollbar{display:none}
-.nav-right{display:flex;align-items:center;gap:1px;padding:4px 5px;flex-shrink:0;border-left:1px solid var(--border)}
+.nav-right{display:flex;align-items:center;gap:0px;padding:2px 3px;flex-shrink:0;border-left:1px solid var(--border)}
 .ntab{padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;transition:.2s;flex-shrink:0}
 .ntab:hover{border-color:var(--accent);color:var(--text)}
 .ntab.on{border-color:var(--accent);background:rgba(59,130,246,.2);color:var(--accent)}
 .nsep{width:1px;height:22px;background:var(--border);flex-shrink:0;margin:0 2px}
-.nbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:7px 9px;border-radius:8px;font-size:12px;font-weight:600;white-space:nowrap;flex-shrink:0;transition:.2s}
+.nbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;padding:6px 7px;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap;flex-shrink:0;transition:.2s}
 .nbtn:hover{background:var(--card2);color:var(--text)}
 .nbtn.on{background:rgba(59,130,246,.2);color:var(--accent)}
 .nav-r2{display:none;align-items:center;gap:6px;padding:0 10px 7px;font-size:11px;color:var(--muted)}
@@ -67,16 +67,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .tw-spacer{height:180px;display:block}
 table{border-collapse:collapse;width:max-content;min-width:100%}
 thead th{background:var(--card);position:sticky;top:0;z-index:10;padding:8px 9px;font-size:10px;font-weight:700;color:var(--muted);text-align:center;white-space:nowrap;border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.3px}
-th.s0{position:sticky;left:0;z-index:20;min-width:90px;max-width:90px;width:90px}
-th.s1{position:sticky;left:90px;z-index:20;border-right:2px solid var(--border)}
+th.s0{position:sticky;left:0;z-index:20;min-width:28px;max-width:28px;width:28px;padding:8px 4px}
+th.s1{position:sticky;left:28px;z-index:20;min-width:82px;max-width:82px;width:82px;border-right:2px solid var(--border)}
 tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:.12s}
 tbody tr:hover{background:rgba(255,255,255,.035)}
 tbody tr.dup{background:rgba(234,179,8,.08)!important}
 tbody tr.blk{background:rgba(239,68,68,.08)!important}
 td{padding:7px 9px;text-align:center;font-size:12px;white-space:nowrap;vertical-align:middle}
-td.s0{position:sticky;left:0;z-index:5;background:var(--bg);text-align:left;width:90px;max-width:90px;overflow:hidden;text-overflow:ellipsis}
-td.s1{position:sticky;left:90px;z-index:5;background:var(--bg);text-align:left;border-right:2px solid var(--border);max-width:110px;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+td.s0{position:sticky;left:0;z-index:5;background:var(--bg);text-align:center;width:28px;max-width:28px;padding:7px 4px;font-size:11px;color:var(--muted)}
+td.s1{position:sticky;left:28px;z-index:5;background:var(--bg);text-align:left;border-right:2px solid var(--border);width:82px;max-width:82px;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 tbody tr:hover td.s0,tbody tr:hover td.s1{background:#131f35}
+tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 .sp{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;border:1.5px solid}
 .sp.Approved{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.12)}
 .sp.False{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.12)}
@@ -151,7 +152,6 @@ tbody tr:hover td.s0,tbody tr:hover td.s1{background:#131f35}
 .stag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
 .blit{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
 tr.sel-row>td{background:rgba(59,130,246,.18)!important}
-tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 [data-dup="1"]{color:var(--yellow)!important;font-weight:700}
 .cpnick{cursor:pointer!important}
 .cpnick:hover{background:rgba(99,179,237,.12)!important;border-radius:4px}
@@ -180,6 +180,23 @@ tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 .ccell{position:relative;cursor:context-menu}.ccell.c1{background:rgba(239,68,68,.25)}.ccell.c2{background:rgba(249,115,22,.25)}.ccell.c3{background:rgba(234,179,8,.25)}.ccell.c4{background:rgba(34,197,94,.25)}.ccell.c5{background:rgba(6,182,212,.25)}.ccell.c6{background:rgba(59,130,246,.25)}.ccell.c7{background:rgba(139,92,246,.25)}.ccell.c8{background:rgba(236,72,153,.25)}.ccell.c9{background:rgba(255,255,255,.15)}.ccell.c10{background:rgba(148,163,184,.2)}.ccell.c11{background:rgba(161,98,7,.25)}.ccell.c12{background:rgba(19,78,74,.3)}.ccell.c13{background:rgba(23,37,84,.3)}.ccell.c14{background:rgba(74,25,66,.3)}
 .cpal{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:950;padding:8px;display:flex;gap:5px;flex-wrap:wrap;width:168px}
 .cpal-dot{width:22px;height:22px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:.15s}.cpal-dot:hover{border-color:var(--text);transform:scale(1.15)}
+/* PERIOD FILTER */
+.sp-bar{display:flex;gap:5px;padding:8px 10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);background:rgba(59,130,246,.06);flex-shrink:0}
+.sp-lbl{font-size:11px;color:var(--muted);white-space:nowrap}
+.sp-btn{padding:4px 10px;border-radius:7px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:700;transition:.2s;white-space:nowrap}
+.sp-btn:hover{border-color:var(--accent);color:var(--text)}
+.sp-btn.on{border-color:var(--accent);background:rgba(59,130,246,.2);color:var(--accent)}
+.sp-btn.rst{border-color:var(--red);color:var(--red)}
+/* ADJUSTMENTS */
+.adj-sec{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+.adj-hdr{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.adj-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.adj-lbl{flex:1;font-size:11px}
+.adj-note{font-size:10px;color:var(--muted)}
+.adj-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px}
+.adj-del:hover{color:var(--red)}
+.adj-add{background:transparent;border:1.5px dashed var(--border);color:var(--accent);cursor:pointer;font-size:11px;padding:5px 10px;border-radius:7px;width:100%;margin-top:6px;transition:.2s}
+.adj-add:hover{border-color:var(--accent);background:rgba(59,130,246,.1)}
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-size:13px;z-index:2000;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 .toast.show{opacity:1}
@@ -316,6 +333,45 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 <div class="toast" id="toast"></div>
 
 
+<!-- ADJUSTMENT MODAL -->
+<div id="m-adj" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border-radius:14px;width:min(400px,94vw);border:1px solid var(--border);box-shadow:var(--shadow);padding:20px 18px">
+    <div style="display:flex;align-items:center;margin-bottom:16px">
+      <span style="font-weight:700;font-size:15px" id="adj-title">⚡ Коригування</span>
+      <button onclick="closeAdj()" style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Тип коригування</label>
+      <select id="adj-type" class="inp" onchange="adjTypeChange()">
+        <option value="void">🚫 Анулювати дохід за діапазон</option>
+        <option value="expense">💸 Ручна витрата</option>
+      </select>
+    </div>
+    <div id="adj-range-row" style="margin-bottom:12px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Діапазон (від — до)</label>
+      <div style="display:flex;gap:8px">
+        <input type="date" id="adj-from" class="inp" style="flex:1">
+        <span style="line-height:38px;color:var(--muted)">—</span>
+        <input type="date" id="adj-to" class="inp" style="flex:1">
+      </div>
+    </div>
+    <div id="adj-exp-row" style="display:none;margin-bottom:12px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Дата витрати</label>
+      <input type="date" id="adj-date" class="inp" style="margin-bottom:8px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Сума (₴)</label>
+      <input type="number" id="adj-amount" class="inp" placeholder="0">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">Примітка</label>
+      <input type="text" id="adj-note" class="inp" placeholder="необов'язково">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeAdj()" class="btn ghost" style="flex:1">Скасувати</button>
+      <button onclick="saveAdj()" class="btn" style="flex:1">Зберегти</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONDITIONS MODAL -->
 <div id="m-cond" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px">
   <div style="background:var(--card);border-radius:14px;width:min(500px,94vw);max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--border);box-shadow:var(--shadow)">
@@ -335,7 +391,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 
 <script>
 'use strict';
-const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null,clipboard:[]};
+const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null,clipboard:[],statsPeriod:null};
 
 // ── SUPABASE DB ──
 const _SB_URL='https://iojrkwpdomtcizsbyhio.supabase.co';
@@ -435,7 +491,7 @@ function getDaysInRange(dr,entries){
   if(!dr||(!dr.from&&!dr.to))return 0;
   if(!dr.from)return 0;
   // No entries → don't count days even if range is set
-  if(entries&&entries.length===0)return 0;
+  if(!entries||entries.length===0)return 0;
   // Effective end = min(dr.to, last actual entry date)
   let effTo=dr.to||'';
   if(entries&&entries.length){
@@ -622,32 +678,36 @@ async function renderSvc(){
   const shown=allSvc.filter(e=>!e.archived&&inDR(e.date)&&(!q||(e.drop||'').toLowerCase().includes(q)||(e.dropovod||'').toLowerCase().includes(q))&&(!G.sf||e.status===G.sf));
   const sh=document.getElementById('shead'),sb=document.getElementById('sbody');
   if(type==='payment'||type==='paysera'||type==='banking'){
-    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>Тел.</th><th>Email</th><th>Пароль</th><th>Пін</th>${G.role==='admin'?'<th>Оплата</th>':''}<th>Відлежка</th><th>Статус</th><th style="width:28px">📝</th></tr>`;
-    sb.innerHTML=shown.length?shown.map(e=>{
+    sh.innerHTML=`<tr><th class="s0" style="left:0">#</th><th>Дата/Час</th><th>Дроповод</th><th class="s1" style="left:28px">Дроп</th><th>Тел.</th><th>Email</th><th>Пароль</th><th>Пін</th>${G.role==='admin'?'<th>Оплата</th>':''}<th>Відлежка</th><th>Статус</th><th style="width:28px">📝</th></tr>`;
+    sb.innerHTML=shown.length?shown.map((e,idx)=>{
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
       const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
-        <td class="s0 cpnick" onclick="cpNick(event,'${e.dropovod||''}')">${e.dropovod||'—'}</td><td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
-        <td>${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
+        <td class="s0">${idx+1}</td>
+        <td style="font-size:11px">${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
+        <td class="cpnick" onclick="cpNick(event,'${e.dropovod||''}')" style="font-size:11px;color:var(--muted)">${e.dropovod||'—'}</td>
+        <td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
         <td>${e.telephone||'—'}</td><td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;font-size:11px">${e.mail||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.password||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.pin||'—'}</td>
         ${G.role==='admin'?`<td style="color:var(--green)">${e.status==='Approved'?'₴'+(e.dropovod?(e.dropovodPay||0):(e.dropPay||0)):'—'}</td>`:''}        <td>${e.waitUntil?(()=>{const today=new Date().toISOString().slice(0,10);const over=e.waitUntil<=today;return(over?'❗ ':'')+e.waitUntil;})():'—'}</td><td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${noteCell(e)}</tr>`;
-    }).join(''):emptyRow(11);
+    }).join(''):emptyRow(12);
   } else {
-    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>ID</th><th>FTD</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th><th>D5</th><th>D6</th><th>D7</th><th>Статус</th>${G.role==='admin'?'<th>Витрати</th>':''}<th style=\"width:28px\">📝</th></tr>`;
-    sb.innerHTML=shown.length?shown.map(e=>{
+    sh.innerHTML=`<tr><th class="s0" style="left:0">#</th><th>Дата/Час</th><th>Дроповод</th><th class="s1" style="left:28px">Дроп</th><th>ID</th><th>FTD</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th><th>D5</th><th>D6</th><th>D7</th><th>Статус</th>${G.role==='admin'?'<th>Витрати</th>':''}<th style="width:28px">📝</th></tr>`;
+    sb.innerHTML=shown.length?shown.map((e,idx)=>{
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
       const deps=e.deposits||[];
       const cc=e.cellColors||{};
       const dc2=[0,1,2,3,4,5,6].map(i=>{const v=deps[i],cl=cc['d'+i]?'ccell '+cc['d'+i]:'ccell';return v===undefined||v===null||v===''?`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">—</td>`:`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:${v==0?'var(--border)':'var(--text)'}">${v}</td>`;}).join('');
       const exp=G.role==='admin'?`<td style="color:var(--muted);font-size:11px">₴${fmt(entryExpenses(e,rates,dvOv))}</td>`:'';
       const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
-        <td class="s0 cpnick" onclick="cpNick(event,'${e.dropovod||''}')">${e.dropovod||'—'}</td><td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
-        <td>${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
-        <td style="font-size:10px" data-dup="${idDup?1:0}"">${e.accountId||'—'}</td>
+        <td class="s0">${idx+1}</td>
+        <td style="font-size:11px">${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
+        <td class="cpnick" onclick="cpNick(event,'${e.dropovod||''}')" style="font-size:11px;color:var(--muted)">${e.dropovod||'—'}</td>
+        <td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
+        <td style="font-size:10px" data-dup="${idDup?1:0}">${e.accountId||'—'}</td>
         <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}</td>${dc2}
         <td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${exp}${noteCell(e)}</tr>`;
-    }).join(''):emptyRow(17);
+    }).join(''):emptyRow(18);
   }
   await renderStrip(shown,svc,rates,dvOv);
 }
@@ -770,11 +830,30 @@ async function ogCtx(e,dvK,drK,svc){
 
 // ── STATS ──
 function setStTab(t){G.stab=t;renderStats();}
+function setStatsPeriod(type){
+  const now=new Date();
+  const todayKyiv=now.toLocaleDateString('en-CA',{timeZone:'Europe/Kiev'}); // YYYY-MM-DD за Києвом
+  const kyivDate=new Date(todayKyiv);
+  const y=kyivDate.getFullYear(),m=kyivDate.getMonth();
+  if(type==='month'){
+    const f=`${y}-${String(m+1).padStart(2,'0')}-01`;
+    G.statsPeriod={from:f,to:todayKyiv,label:`${now.toLocaleString('uk-UA',{month:'long',timeZone:'Europe/Kiev'})} ${y}`};
+  } else if(type==='prev'){
+    const pm=m===0?11:m-1,py=m===0?y-1:y;
+    const days=new Date(py,pm+1,0).getDate();
+    G.statsPeriod={from:`${py}-${String(pm+1).padStart(2,'0')}-01`,to:`${py}-${String(pm+1).padStart(2,'0')}-${String(days).padStart(2,'0')}`,label:`Мин. місяць`};
+  } else if(type==='year'){
+    G.statsPeriod={from:`${y}-01-01`,to:todayKyiv,label:`${y} рік`};
+  } else if(type==='reset'){
+    G.statsPeriod=null;
+  }
+  renderStats();
+}
 async function renderStats(){
   const svcs=await cfg('services'),types=await cfg('svcTypes'),rates=await cfg('expRates')||DEF.expRates;
   const dvOv=await cfg('dvOverrides')||{},cr=await cfg('casinoRates')||{},ct=await cfg('casinoTargets')||{};
   const adUSD=parseFloat(await cfg('adExpenses'))||0,subUSD=parseFloat(await cfg('subExpenses'))||0;
-  const adM=adUSD*G.usdRate,subM=subUSD*G.usdRate; // convert $ → ₴
+  const adM=adUSD*G.usdRate,subM=subUSD*G.usdRate;
   const casinoDR=await cfg('casinoDR')||{},all=await db.all('entries');
 
   // build tabs
@@ -791,12 +870,23 @@ async function renderStats(){
   const body=document.getElementById('sbody2');
 
   if(G.stab==='casino'&&G.role==='admin'){
-    // Per-casino filtered by their respective date ranges
+    // Period filter toolbar
+    const sp=G.statsPeriod;
+    const spBar=`<div class="sp-bar">
+      <span class="sp-lbl">📅 Показати за:</span>
+      <button class="sp-btn ${!sp?'on':''}" onclick="setStatsPeriod('reset')">По діапазонах</button>
+      <button class="sp-btn ${sp&&sp.label&&sp.label.includes('рік')?'on':''}" onclick="setStatsPeriod('year')">Цей рік</button>
+      <button class="sp-btn ${sp&&sp.label==='Мин. місяць'?'on':''}" onclick="setStatsPeriod('prev')">Мин. місяць</button>
+      <button class="sp-btn ${sp&&sp.label&&!sp.label.includes('рік')&&sp.label!=='Мин. місяць'?'on':''}" onclick="setStatsPeriod('month')">Цей місяць</button>
+      ${sp?`<span style="font-size:11px;color:var(--accent);margin-left:4px">· ${sp.label}</span>`:''}
+    </div>`;
+
+    // Per-casino filtered by effective date ranges
     const svcData={};
-    let gRevenue=0,gTotalExp=0,gDays=[];
+    let gRevenue=0,gTotalExp=0,gAdjTotal=0,gDays=[],gMinDate='',gMaxDate='';
 
     for(const svc of svcs){
-      const dr=casinoDR[svc]||{from:'',to:''};
+      const dr=sp||casinoDR[svc]||{from:'',to:''};
       const en=all.filter(e=>{
         if(e.service!==svc)return false;
         if(!dr.from&&!dr.to)return true;
@@ -807,8 +897,9 @@ async function renderStats(){
       });
       const days=getDaysInRange(dr,en);
       gDays.push(days);
+      // Track global min/max entry dates (for period-filter mode)
+      en.forEach(e=>{const d=(e.date||'').slice(0,10);if(d){if(!gMinDate||d<gMinDate)gMinDate=d;if(d>gMaxDate)gMaxDate=d;}});
       const ap=en.filter(e=>e.status==='Approved'),wt=en.filter(e=>e.status==='Waiting'),fl=en.filter(e=>e.status==='False');
-      // Expense breakdown
       let dvCosts=0,dropCosts=0,deposits=0;
       en.forEach(e=>{
         deposits+=entryDeposits(e);
@@ -819,30 +910,47 @@ async function renderStats(){
         }
       });
       const totalPersonnel=dvCosts+dropCosts,totalExp=totalPersonnel+deposits;
-      const rateUSD=cr[svc]||0,revenue=ap.length*rateUSD*G.usdRate; // rate in $, revenue in ₴
+      const rateUSD=cr[svc]||0,revenue=ap.length*rateUSD*G.usdRate;
       const adProp=proportionalMonthly(adM,days),subProp=proportionalMonthly(subM,days);
-      const net=revenue-totalExp;
+      // Load adjustments
+      const adjs=(await cfg('adj_'+svc))||[];
+      let adjVoidRev=0,adjExpense=0;
+      for(const adj of adjs){
+        if(adj.type==='void'){
+          const voidAp=ap.filter(e=>{const d=(e.date||'').slice(0,10);return d>=adj.from&&d<=adj.to;});
+          adjVoidRev+=voidAp.length*rateUSD*G.usdRate;
+        } else if(adj.type==='expense'){
+          const d=adj.date||'';
+          const inDrA=(!dr.from||d>=dr.from)&&(!dr.to||d<=dr.to);
+          if(inDrA)adjExpense+=parseFloat(adj.amount)||0;
+        }
+      }
+      const adjTotal=adjVoidRev+adjExpense;
+      const net=revenue-totalExp-adjTotal;
       const target=ct[svc]||0,remaining=Math.max(0,target-ap.length);
-      svcData[svc]={ap:ap.length,wt:wt.length,fl:fl.length,dvCosts,dropCosts,deposits,totalExp,rateUSD,revenue,adProp,subProp,net,target,remaining,days,en};
-      gRevenue+=revenue;gTotalExp+=totalExp;
+      svcData[svc]={ap:ap.length,wt:wt.length,fl:fl.length,dvCosts,dropCosts,deposits,totalExp,rateUSD,revenue,adProp,subProp,net,target,remaining,days,en,adjs,adjVoidRev,adjExpense,adjTotal};
+      gRevenue+=revenue;gTotalExp+=totalExp;gAdjTotal+=adjTotal;
     }
 
-    // Global ad/sub with average days
-    const nonZeroDays=gDays.filter(d=>d>0);const avgDays=nonZeroDays.length?nonZeroDays.reduce((s,d)=>s+d,0)/nonZeroDays.length:0;
-    const gAdProp=proportionalMonthly(adM,avgDays),gSubProp=proportionalMonthly(subM,avgDays);
-    const gNet=gRevenue-gTotalExp-gAdProp-gSubProp;
+    // Global days: period filter → actual first→last entry span; по діапазонах → avg of per-service ranges
+    const globalDays=sp
+      ? ((gMinDate&&gMaxDate)?Math.round((new Date(gMaxDate)-new Date(gMinDate))/(864e5))+1:0)
+      : (gDays.filter(d=>d>0).reduce((s,d,_,a)=>s+d/a.length,0)||0);
+    const gAdProp=proportionalMonthly(adM,globalDays),gSubProp=proportionalMonthly(subM,globalDays);
+    const gNet=gRevenue-gTotalExp-gAdjTotal-gAdProp-gSubProp;
 
-    let html=`<div class="gcard">
+    let html=spBar+`<div class="gcard">
       <h3>🌐 Загальна статистика <span style="font-size:10px;font-weight:400;color:var(--muted);margin-left:6px">курс: $1 = ₴${G.usdRate.toFixed(2)}</span></h3>
       <div class="sr"><span class="lb">💵 Дохід (Approved × ставки)</span><span class="vl" style="color:var(--green)">${fmtBoth(gRevenue)}</span></div>
       <div class="sr"><span class="lb">💸 Операційні витрати</span><span class="vl">${fmtBoth(gTotalExp)}</span></div>
+      ${gAdjTotal>0?`<div class="sr"><span class="lb">⚡ Коригування (мінус)</span><span class="vl" style="color:var(--red)">-${fmtBoth(gAdjTotal)}</span></div>`:''}
       <div class="sr">
         <span class="lb">📢 Реклама ($/міс)</span>
-        <span class="vl fl" style="gap:5px"><span style="color:var(--muted);font-size:12px">$</span><input class="ri2" type="number" value="${adUSD}" placeholder="0" onchange="saveGExp('adExpenses',this.value)" style="width:80px"> <span style="color:var(--muted);font-size:11px">≈ ${fmtBoth(gAdProp)} (${Math.round(avgDays)}дн.)</span></span>
+        <span class="vl fl" style="gap:5px"><span style="color:var(--muted);font-size:12px">$</span><input class="ri2" type="number" value="${adUSD}" placeholder="0" onchange="saveGExp('adExpenses',this.value)" style="width:80px"> <span style="color:var(--muted);font-size:11px">≈ ${fmtBoth(gAdProp)} (${globalDays}дн.)</span></span>
       </div>
       <div class="sr">
         <span class="lb">🔧 Підписки ($/міс)</span>
-        <span class="vl fl" style="gap:5px"><span style="color:var(--muted);font-size:12px">$</span><input class="ri2" type="number" value="${subUSD}" placeholder="0" onchange="saveGExp('subExpenses',this.value)" style="width:80px"> <span style="color:var(--muted);font-size:11px">≈ ${fmtBoth(gSubProp)} (${Math.round(avgDays)}дн.)</span></span>
+        <span class="vl fl" style="gap:5px"><span style="color:var(--muted);font-size:12px">$</span><input class="ri2" type="number" value="${subUSD}" placeholder="0" onchange="saveGExp('subExpenses',this.value)" style="width:80px"> <span style="color:var(--muted);font-size:11px">≈ ${fmtBoth(gSubProp)} (${globalDays}дн.)</span></span>
       </div>
       <hr class="t">
       <div class="sr" style="font-size:14px;font-weight:700"><span class="lb">🏆 Чистий прибуток</span>
@@ -850,8 +958,21 @@ async function renderStats(){
     </div>`;
 
     for(const svc of svcs){
-      const s=svcData[svc],dr=casinoDR[svc]||{from:'',to:''},nc=s.net>=0?'var(--green)':'var(--red)';
+      const s=svcData[svc],dr=sp||casinoDR[svc]||{from:'',to:''},nc=s.net>=0?'var(--green)':'var(--red)';
       const drLabel=dr.from&&dr.to?`${dr.from.slice(5)}–${dr.to.slice(5)} (${s.days}дн.)`:`Весь час`;
+      // Adjustments section
+      const adjRows=s.adjs.map(adj=>{
+        const lbl=adj.type==='void'
+          ?`🚫 Ануляція ${adj.from?adj.from.slice(5):''}–${adj.to?adj.to.slice(5):''}`
+          :`💸 Витрата ${adj.date?adj.date.slice(5):''} ₴${fmt(adj.amount||0)}`;
+        return`<div class="adj-row"><span class="adj-lbl">${lbl}${adj.note?`<span class="adj-note"> · ${adj.note}</span>`:''}</span><button class="adj-del" onclick="removeAdj('${svc}','${adj.id}')">✕</button></div>`;
+      }).join('');
+      const adjSection=`<div class="adj-sec">
+        <div class="adj-hdr">⚡ Коригування${s.adjTotal>0?` <span style="color:var(--red)">-${fmtBoth(s.adjTotal)}</span>`:''}:</div>
+        ${adjRows}
+        <button class="adj-add" onclick="openAdj('${svc}')">➕ Додати коригування</button>
+      </div>`;
+
       html+=`<div class="scard">
         <div class="schead" onclick="toggleSCard('${svc}')">
           <h3>${svc} <span class="ttag">${types[svc]||'casino'}</span></h3>
@@ -871,13 +992,13 @@ async function renderStats(){
             <div class="er"><span class="el">🎰 Депозити (всі записи)</span><span>${fmtBoth(s.deposits)}</span></div>
             <div class="er" style="font-weight:700;color:var(--text)"><span class="el" style="color:var(--text)">Разом витрати</span><span>${fmtBoth(s.totalExp)}</span></div>
           </div>
-
           <div class="sr">
             <span class="lb">🏦 Ставка ($/approved)</span>
             <span class="vl fl" style="gap:5px"><span style="color:var(--muted);font-size:12px">$</span><input class="ri2" type="number" value="${s.rateUSD}" placeholder="0"
               onchange="saveRate('${svc}',this.value)" style="width:75px"> <span style="color:var(--muted);font-size:11px">× ${s.ap} = ${fmtBoth(s.revenue)}</span></span>
           </div>
           <div class="sr"><span class="lb">💵 Дохід</span><span class="vl" style="color:var(--green)">${fmtBoth(s.revenue)}</span></div>
+          ${s.adjTotal>0?`<div class="sr"><span class="lb">⚡ Коригування</span><span class="vl" style="color:var(--red)">-${fmtBoth(s.adjTotal)}</span></div>`:''}
           <div class="sr" style="font-weight:700"><span class="lb">🏆 Чистий прибуток</span><span style="color:${nc}">${fmtBoth(s.net)}</span></div>
           <hr class="t">
           <div class="sr">
@@ -887,6 +1008,7 @@ async function renderStats(){
               ${s.target>0?`<span style="color:${s.remaining>0?'var(--yellow)':'var(--green)'};font-size:12px">Залишилось: <b>${s.remaining}</b></span>`:''}
             </span>
           </div>
+          ${adjSection}
         </div>
       </div>`;
     }
@@ -967,7 +1089,10 @@ async function openForm(id){
   G.editId=id;
   const types=await cfg('svcTypes'),svc=G.svc,type=types[svc]||'casino';
   const e=id?await db.get('entries',id):{};
-  const now=new Date(),tod=now.toISOString().slice(0,10),tim=now.toTimeString().slice(0,5);
+  const now=new Date();
+  const _ktz='Europe/Kiev';
+  const tod=now.toLocaleDateString('en-CA',{timeZone:_ktz}); // YYYY-MM-DD в часовому поясі Київ
+  const tim=now.toLocaleTimeString('uk-UA',{timeZone:_ktz,hour:'2-digit',minute:'2-digit',hour12:false});
   const so=['Approved','Waiting','False'].map(s=>`<option value="${s}" ${(e.status||'Waiting')===s?'selected':''}>${s}</option>`).join('');
   document.getElementById('mtitle').textContent=id?`✏️ ${svc}`:`➕ ${svc}`;
   let body='';
@@ -1606,9 +1731,11 @@ async function init(){
       regs.forEach(r=>r.unregister());
     });
   }
-  // Conditions modal click-outside
+  // Modal click-outside
   const mc=document.getElementById('m-cond');
   if(mc)mc.addEventListener('click',e=>{if(e.target===e.currentTarget)closeCond();});
+  const ma=document.getElementById('m-adj');
+  if(ma)ma.addEventListener('click',e=>{if(e.target===e.currentTarget)closeAdj();});
   // Auto-login from localStorage (7-day remember)
   (function(){
     const role=localStorage.getItem('crm_role'),exp=parseInt(localStorage.getItem('crm_role_exp')||0);
@@ -1630,6 +1757,54 @@ async function saveCond(){
   const key='conditions'+(G.svc?'_'+G.svc:'');
   await setCfg(key,document.getElementById('cond-text').value);
   closeCond();showToast('✅ Умови збережено');
+}
+
+// ── ADJUSTMENTS ──
+let _adjSvc=null;
+function openAdj(svc){
+  _adjSvc=svc;
+  document.getElementById('adj-title').textContent='⚡ Коригування — '+svc;
+  document.getElementById('adj-type').value='void';
+  document.getElementById('adj-from').value='';
+  document.getElementById('adj-to').value='';
+  document.getElementById('adj-date').value='';
+  document.getElementById('adj-amount').value='';
+  document.getElementById('adj-note').value='';
+  adjTypeChange();
+  document.getElementById('m-adj').style.display='flex';
+}
+function closeAdj(){document.getElementById('m-adj').style.display='none';_adjSvc=null;}
+function adjTypeChange(){
+  const t=document.getElementById('adj-type').value;
+  document.getElementById('adj-range-row').style.display=t==='void'?'block':'none';
+  document.getElementById('adj-exp-row').style.display=t==='expense'?'block':'none';
+}
+async function saveAdj(){
+  if(!_adjSvc)return;
+  const type=document.getElementById('adj-type').value;
+  const note=document.getElementById('adj-note').value.trim();
+  let adj={id:Date.now().toString(36),type,note};
+  if(type==='void'){
+    adj.from=document.getElementById('adj-from').value;
+    adj.to=document.getElementById('adj-to').value;
+    if(!adj.from||!adj.to){showToast('⚠️ Вкажіть діапазон');return;}
+  } else {
+    adj.date=document.getElementById('adj-date').value;
+    adj.amount=parseFloat(document.getElementById('adj-amount').value)||0;
+    if(!adj.date){showToast('⚠️ Вкажіть дату');return;}
+  }
+  const existing=(await cfg('adj_'+_adjSvc))||[];
+  existing.push(adj);
+  await setCfg('adj_'+_adjSvc,existing);
+  closeAdj();showToast('✅ Коригування збережено');
+  renderStats();
+}
+async function removeAdj(svc,adjId){
+  const existing=(await cfg('adj_'+svc))||[];
+  const updated=existing.filter(a=>a.id!==adjId);
+  await setCfg('adj_'+svc,updated);
+  showToast('🗑 Коригування видалено');
+  renderStats();
 }
 </script>
 </body>
