@@ -147,6 +147,9 @@ tbody tr:hover td.s0,tbody tr:hover td.s1{background:#131f35}
 .stag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:var(--card2);border:1px solid var(--border);font-size:12px;font-weight:600;margin:3px}
 .stag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
 .blit{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+tr.sel-row>td{background:rgba(59,130,246,.18)!important}
+tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
+[data-dup="1"]{color:var(--yellow)!important;font-weight:700}
 .cpnick{cursor:pointer!important}
 .cpnick:hover{background:rgba(99,179,237,.12)!important;border-radius:4px}
 .arch-badge{font-size:9px;background:var(--muted);color:var(--bg);padding:1px 5px;border-radius:8px;margin-left:5px}
@@ -192,6 +195,17 @@ tbody tr:hover td.s0,tbody tr:hover td.s1{background:#131f35}
 hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 
 @media(hover:hover) and (pointer:fine){html{zoom:1.25}}
+
+/* STATUS FILTER */
+.sfrow{display:flex;gap:5px;flex-wrap:wrap;padding:0 2px 2px}
+.sfbtn{padding:4px 11px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:11px;font-weight:700;white-space:nowrap;transition:.2s}
+.sfbtn:hover{border-color:var(--accent);color:var(--text)}
+.sfbtn.on{border-color:var(--accent);background:rgba(59,130,246,.2);color:var(--accent)}
+.sfbtn.appr.on{border-color:var(--green);background:rgba(34,197,94,.15);color:var(--green)}
+.sfbtn.wait.on{border-color:var(--yellow);background:rgba(234,179,8,.15);color:var(--yellow)}
+.sfbtn.fals.on{border-color:var(--red);background:rgba(239,68,68,.15);color:var(--red)}
+/* NOTE CELL */
+.ncell{text-align:center;cursor:help;font-size:13px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -241,9 +255,17 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
     </div>
     <!-- SERVICE ENTRIES -->
     <div class="view" id="v-svc">
-      <div class="svctb">
-        <input class="sinp" id="ssearch" placeholder="🔍 Пошук по дропу/дроповоду..." oninput="renderSvc()">
-        <button class="btn sm" onclick="openForm(null)">+ Запис</button>
+      <div class="svctb" style="flex-direction:column;align-items:stretch;gap:6px;padding-bottom:8px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="sinp" id="ssearch" placeholder="🔍 Пошук по дропу/дроповоду..." oninput="renderSvc()">
+          <button class="btn sm" onclick="openForm(null)">+ Запис</button>
+        </div>
+        <div class="sfrow">
+          <button class="sfbtn on" data-sf="" onclick="setSF(null)">Всі</button>
+          <button class="sfbtn appr" data-sf="Approved" onclick="setSF('Approved')">✅ Approved</button>
+          <button class="sfbtn wait" data-sf="Waiting" onclick="setSF('Waiting')">⏳ Waiting</button>
+          <button class="sfbtn fals" data-sf="False" onclick="setSF('False')">❌ False</button>
+        </div>
       </div>
       <div class="tw"><table><thead id="shead"></thead><tbody id="sbody"></tbody></table></div>
 
@@ -288,7 +310,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 
 <script>
 'use strict';
-const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41};
+const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null};
 
 // ── SUPABASE DB ──
 const _SB_URL='https://iojrkwpdomtcizsbyhio.supabase.co';
@@ -547,6 +569,7 @@ async function renderHome(){
 }
 
 // ── SERVICE VIEW ──
+function noteCell(e){const n=(e.note||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');return n?`<td class="ncell" title="${n}">📝</td>`:`<td></td>`;}
 async function renderSvc(){
   if(!G.svc)return;
   const svc=G.svc,types=await cfg('svcTypes'),rates=await cfg('expRates')||DEF.expRates,dvOv=await cfg('dvOverrides')||{};
@@ -555,35 +578,36 @@ async function renderSvc(){
   const allSvc=all.filter(e=>e.service===svc);
   // dup map (all entries, no date filter)
   const dc={};allSvc.forEach(e=>{const k=(e.drop||'').toLowerCase().trim();if(k)dc[k]=(dc[k]||0)+1;});
-  const shown=allSvc.filter(e=>!e.archived&&inDR(e.date)&&(!q||(e.drop||'').toLowerCase().includes(q)||(e.dropovod||'').toLowerCase().includes(q)));
+  const iac={};allSvc.forEach(e=>{const k=(e.accountId||'').trim();if(k)iac[k]=(iac[k]||0)+1;});
+  const shown=allSvc.filter(e=>!e.archived&&inDR(e.date)&&(!q||(e.drop||'').toLowerCase().includes(q)||(e.dropovod||'').toLowerCase().includes(q))&&(!G.sf||e.status===G.sf));
   const sh=document.getElementById('shead'),sb=document.getElementById('sbody');
   if(type==='payment'||type==='paysera'||type==='banking'){
-    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>Тел.</th><th>Email</th><th>Пароль</th><th>Пін</th>${G.role==='admin'?'<th>Оплата</th>':''}<th>Відлежка</th><th>Статус</th></tr>`;
+    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>Тел.</th><th>Email</th><th>Пароль</th><th>Пін</th>${G.role==='admin'?'<th>Оплата</th>':''}<th>Відлежка</th><th>Статус</th><th style="width:28px">📝</th></tr>`;
     sb.innerHTML=shown.length?shown.map(e=>{
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
-      return`<tr class="${cls}" oncontextmenu="eCtx(event,${e.id})" onclick="openForm(${e.id})">
+      const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
         <td class="s0 cpnick" onclick="cpNick(event,'${e.dropovod||''}')">${e.dropovod||'—'}</td><td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
         <td>${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
         <td>${e.telephone||'—'}</td><td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;font-size:11px">${e.mail||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.password||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.pin||'—'}</td>
-        ${G.role==='admin'?`<td style="color:var(--green)">${e.status==='Approved'?'₴'+(e.dropovod?(e.dropovodPay||0):(e.dropPay||0)):'—'}</td>`:''}        <td>${e.waitUntil?(()=>{const today=new Date().toISOString().slice(0,10);const over=e.waitUntil<=today;return(over?'❗ ':'')+e.waitUntil;})():'—'}</td><td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td></tr>`;
-    }).join(''):emptyRow(10);
+        ${G.role==='admin'?`<td style="color:var(--green)">${e.status==='Approved'?'₴'+(e.dropovod?(e.dropovodPay||0):(e.dropPay||0)):'—'}</td>`:''}        <td>${e.waitUntil?(()=>{const today=new Date().toISOString().slice(0,10);const over=e.waitUntil<=today;return(over?'❗ ':'')+e.waitUntil;})():'—'}</td><td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${noteCell(e)}</tr>`;
+    }).join(''):emptyRow(11);
   } else {
-    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>ID</th><th>FTD</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th><th>D5</th><th>D6</th><th>D7</th><th>Статус</th>${G.role==='admin'?'<th>Витрати</th>':''}</tr>`;
+    sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>ID</th><th>FTD</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th><th>D5</th><th>D6</th><th>D7</th><th>Статус</th>${G.role==='admin'?'<th>Витрати</th>':''}<th style=\"width:28px\">📝</th></tr>`;
     sb.innerHTML=shown.length?shown.map(e=>{
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
       const deps=e.deposits||[];
       const cc=e.cellColors||{};
       const dc2=[0,1,2,3,4,5,6].map(i=>{const v=deps[i],cl=cc['d'+i]?'ccell '+cc['d'+i]:'ccell';return v===undefined||v===null||v===''?`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">—</td>`:`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:${v==0?'var(--border)':'var(--text)'}">${v}</td>`;}).join('');
       const exp=G.role==='admin'?`<td style="color:var(--muted);font-size:11px">₴${fmt(entryExpenses(e,rates,dvOv))}</td>`:'';
-      return`<tr class="${cls}" oncontextmenu="eCtx(event,${e.id})" onclick="openForm(${e.id})">
+      const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
         <td class="s0 cpnick" onclick="cpNick(event,'${e.dropovod||''}')">${e.dropovod||'—'}</td><td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
         <td>${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
-        <td style="font-size:10px;color:var(--muted)">${e.accountId||'—'}</td>
+        <td style="font-size:10px" data-dup="${idDup?1:0}"">${e.accountId||'—'}</td>
         <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}</td>${dc2}
-        <td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${exp}</tr>`;
-    }).join(''):emptyRow(16);
+        <td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${exp}${noteCell(e)}</tr>`;
+    }).join(''):emptyRow(17);
   }
   await renderStrip(shown,svc,rates,dvOv);
 }
@@ -910,14 +934,16 @@ async function openForm(id){
     <div class="frow"><div class="fg"><label>Телефон</label><input id="ftel" class="inp" placeholder="380..." value="${e.telephone||''}"></div><div class="fg"><label>Email</label><input id="fmail" class="inp" value="${e.mail||''}"></div></div>
     <div class="frow"><div class="fg"><label>🔑 Пароль</label><input id="fpwd" class="inp" value="${e.password||''}"></div><div class="fg"><label>📌 Пін</label><input id="fpin" class="inp" value="${e.pin||''}"></div></div>
 
-    <div class="frow"><div class="fg"><label>⏰ Відлежка до</label><input id="fwu" class="inp" type="date" value="${e.waitUntil||''}"></div><div class="fg"><label>Статус</label><select id="fst">${so}</select></div></div>`;
+    <div class="frow"><div class="fg"><label>⏰ Відлежка до</label><input id="fwu" class="inp" type="date" value="${e.waitUntil||''}"></div><div class="fg"><label>Статус</label><select id="fst">${so}</select></div></div>
+    <div class="fg"><label>📝 Нотатка</label><textarea id="fnote" class="inp" rows="2" placeholder="Коментар..." style="resize:vertical;min-height:52px">${e.note||''}</textarea></div>`;
   } else {
     const deps=e.deposits||[];
     body=`<div class="frow"><div class="fg"><label>Дата *</label><input id="fd" class="inp" type="date" value="${(e.date||tod).slice(0,10)}"></div><div class="fg"><label>Час</label><input id="ft" class="inp" type="time" value="${e.time||tim}"></div></div>
     <div class="frow"><div class="fg"><label>Дроповод</label><input id="fdv" class="inp" placeholder="@нік або порожньо" value="${e.dropovod||''}"></div><div class="fg"><label>Дроп *</label><input id="fdr" class="inp" placeholder="@нік" value="${e.drop||''}"></div></div>
     <div class="frow"><div class="fg"><label>ID аккаунту</label><input id="faid" class="inp" value="${e.accountId||''}"></div><div class="fg"><label>Статус</label><select id="fst">${so}</select></div></div>
     <div class="fg" style="margin-bottom:7px"><label>Депозити</label></div>
-    <div class="dgrid">${['FTD','D1','D2','D3','D4','D5','D6','D7'].map((l,i)=>`<div class="di"><label>${l}</label><input id="fd${i}" class="inp" type="number" min="0" step="1" placeholder="—" value="${i===0?(e.ftd!==null&&e.ftd!==undefined&&e.ftd!==''?e.ftd:''):(deps[i-1]!==null&&deps[i-1]!==undefined&&deps[i-1]!==''?deps[i-1]:'')}"></div>`).join('')}</div>`;
+    <div class="dgrid">${['FTD','D1','D2','D3','D4','D5','D6','D7'].map((l,i)=>`<div class="di"><label>${l}</label><input id="fd${i}" class="inp" type="number" min="0" step="1" placeholder="—" value="${i===0?(e.ftd!==null&&e.ftd!==undefined&&e.ftd!==''?e.ftd:''):(deps[i-1]!==null&&deps[i-1]!==undefined&&deps[i-1]!==''?deps[i-1]:'')}"></div>`).join('')}</div>
+    <div class="fg"><label>📝 Нотатка</label><textarea id="fnote" class="inp" rows="2" placeholder="Коментар..." style="resize:vertical;min-height:52px">${e.note||''}</textarea></div>`;
   }
   body+=`<div class="factions"><button class="btn" onclick="saveEntry()">Зберегти</button><button class="btn ghost" onclick="closeM()">Скасувати</button>${id?`<button class="btn red mla" onclick="delEntry(${id})">🗑 Видалити</button>`:''}</div>`;
   document.getElementById('mbody').innerHTML=body;
@@ -949,6 +975,7 @@ async function saveEntry(){
     const deps=[];for(let i=1;i<=7;i++){const v=document.getElementById(`fd${i}`).value;deps.push(v!==''?parseFloat(v)||0:null);}
     obj.deposits=deps;
   }
+  obj.note=(document.getElementById('fnote')||{}).value||'';
   if(G.editId){obj.id=G.editId;await db.put('entries',obj);}else await db.add('entries',obj);
   closeM();renderSvc();showToast('✅ Збережено');
 }
@@ -957,14 +984,51 @@ async function delEntry(id){if(!confirm('Видалити?'))return;await db.del
 async function setStatus(id,st){const e=await db.get('entries',id);if(e){e.status=st;await db.put('entries',e);}}
 
 // ── CONTEXT MENU ──
+
+function setSF(v){
+  G.sf=v;
+  document.querySelectorAll('.sfbtn').forEach(b=>{
+    const bv=b.dataset.sf;
+    b.classList.toggle('on',(v===null&&bv==='')||(v&&bv===v));
+  });
+  renderSvc();
+}
+function rowClick(ev,id){
+  if(ev.ctrlKey||ev.metaKey){
+    ev.preventDefault();
+    if(G.sel.has(id))G.sel.delete(id);else G.sel.add(id);
+    const tr=ev.currentTarget;if(tr)tr.classList.toggle('sel-row',G.sel.has(id));
+  } else {
+    G.sel.clear();
+    document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));
+    openForm(id);
+  }
+}
+
 async function eCtx(ev,id){
   ev.preventDefault();ev.stopPropagation();
+  // Multi-select context menu
+  if(G.sel.size>1&&G.sel.has(id)){
+    const ids=[...G.sel];
+    const items=[
+      {l:'✅ Approved ('+ids.length+')',c:'var(--green)',a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){e.status='Approved';await db.put('entries',e);}}G.sel.clear();renderSvc();}},
+      {l:'⏳ Waiting ('+ids.length+')', c:'var(--yellow)',a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){e.status='Waiting';await db.put('entries',e);}}G.sel.clear();renderSvc();}},
+      {l:'❌ False ('+ids.length+')',   c:'var(--red)',   a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){e.status='False';await db.put('entries',e);}}G.sel.clear();renderSvc();}},
+      null,
+      {l:'📋 Дублювати ('+ids.length+')',c:'var(--text)',a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){const{id:_,createdAt:__,...rest}=e;await db.add('entries',{...rest,createdAt:new Date().toISOString(),archived:false});}}G.sel.clear();renderSvc();showToast('📋 Дубльовано');}},
+      {l:'🗑 Видалити ('+ids.length+')', c:'var(--red)', a:async()=>{if(confirm('Видалити '+ids.length+' записів?')){for(const i of ids)await db.del('entries',i);G.sel.clear();renderSvc();}}}
+    ];
+    showCtx(ev.clientX,ev.clientY,items);
+    return;
+  }
+  // Single item context menu
   const items=[
     {l:'✅ Approved',c:'var(--green)',a:async()=>{await setStatus(id,'Approved');renderSvc();}},
     {l:'⏳ Waiting', c:'var(--yellow)',a:async()=>{await setStatus(id,'Waiting');renderSvc();}},
     {l:'❌ False',   c:'var(--red)',   a:async()=>{await setStatus(id,'False');   renderSvc();}},
     null,
     {l:'✏️ Редагувати',c:'var(--text)',a:()=>openForm(id)},
+    {l:'📋 Дублювати', c:'var(--text)',a:async()=>{const e=await db.get('entries',id);if(e){const{id:_,createdAt:__,...rest}=e;await db.add('entries',{...rest,createdAt:new Date().toISOString(),archived:false});renderSvc();showToast('📋 Дубльовано');}}},
     {l:'📦 Архівувати',c:'var(--muted)',a:async()=>{const e=await db.get('entries',id);e.archived=true;await db.put('entries',e);showToast('📦 Архівовано');renderSvc();}},
     {l:'🗑 Видалити',  c:'var(--red)', a:async()=>{if(confirm('Видалити?')){await db.del('entries',id);renderSvc();}}}
   ];
@@ -1178,6 +1242,12 @@ document.addEventListener('touchstart',e=>{
 document.addEventListener('touchend',()=>{clearTimeout(_lpTimer);_lpTimer=null;},{passive:true});
 document.addEventListener('touchmove',()=>{clearTimeout(_lpTimer);_lpTimer=null;},{passive:true});
 document.addEventListener('click',e=>{if(!e.target.closest('#ctx'))closeCtx();});
+document.addEventListener('keydown',e=>{
+  // Ctrl+N — new entry
+  if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();if(G.svc)openForm(null);}
+  // Escape — clear selection
+  if(e.key==='Escape'){G.sel.clear();document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));}
+});
 document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
 
 // ── MOBILE: hide all top UI on scroll down ──
