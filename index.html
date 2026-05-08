@@ -755,6 +755,7 @@ async function goSvcFromOg(svc,drop){
 
 async function ogCtx(e,dvK,drK,svc){
   e.preventDefault();e.stopPropagation();
+  if(_ctxCooldown)return;
   const ogStates=await cfg('oglyadStates')||{};
   const mKey=`${dvK}|||${drK}|||${svc}`;
   const items=[
@@ -1038,6 +1039,7 @@ function setSF(v){
 let _blockRowClick=false;
 function rowClick(ev,id){
   if(_blockRowClick){_blockRowClick=false;return;}
+  if(_ctxCooldown)return;
   if(ev.ctrlKey||ev.metaKey){
     ev.preventDefault();
     if(G.sel.has(id))G.sel.delete(id);else G.sel.add(id);
@@ -1069,6 +1071,7 @@ async function copyEntriesToClipboard(entries){
 }
 async function eCtx(ev,id){
   ev.preventDefault();ev.stopPropagation();
+  if(_ctxCooldown)return;
   closeM(); // close any open form on mobile
   // Multi-select context menu
   if(G.sel.size>1&&G.sel.has(id)){
@@ -1124,8 +1127,11 @@ function showCtx(x,y,items){
   setTimeout(()=>{_ctxOpen=true;},0);
 }
 function ctxDo(i){const m=document.getElementById('ctx');if(m._a[i])m._a[i]();closeCtx();}
-let _ctxOpen=false;
-function closeCtx(){_ctxOpen=false;const m=document.getElementById('ctx');m.style.display='none';m._a=[];}
+let _ctxOpen=false,_ctxCooldown=false;
+function closeCtx(){
+  _ctxOpen=false;const m=document.getElementById('ctx');m.style.display='none';m._a=[];
+  _ctxCooldown=true;setTimeout(()=>{_ctxCooldown=false;},350);
+}
 
 // ── SETTINGS ──
 async function renderCfg(){
@@ -1288,6 +1294,7 @@ const CPAL_COLORS=[
 let _cpal=null;
 async function cellCtx(ev,id,field){
   ev.preventDefault();ev.stopPropagation();
+  if(_ctxCooldown)return;
   closeCtx(); // close row context menu if open
   if(_cpal){_cpal.remove();_cpal=null;}
   const e=await db.get('entries',id);if(!e)return;
@@ -1321,6 +1328,7 @@ document.addEventListener('click',e=>{
   if(_cpal){
     if(!_cpal.contains(e.target)){
       _cpal.remove();_cpal=null;
+      _ctxCooldown=true;setTimeout(()=>{_ctxCooldown=false;},350);
       e.stopPropagation();
     }
     return;
