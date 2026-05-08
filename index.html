@@ -62,6 +62,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .sinp{flex:1;padding:6px 10px;border-radius:7px;border:1.5px solid var(--border);background:#0f172a;color:var(--text);font-size:12px;outline:none}
 .sinp:focus{border-color:var(--accent)}
 .tw{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+.tw-spacer{height:180px;display:block}
 table{border-collapse:collapse;width:max-content;min-width:100%}
 thead th{background:var(--card);position:sticky;top:0;z-index:10;padding:8px 9px;font-size:10px;font-weight:700;color:var(--muted);text-align:center;white-space:nowrap;border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.3px}
 th.s0{position:sticky;left:0;z-index:20;min-width:90px;max-width:90px;width:90px}
@@ -174,8 +175,8 @@ tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 @keyframes ci{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .ctx-i{padding:10px 15px;cursor:pointer;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;transition:.12s}
 .ctx-i:hover{background:var(--card2)}
-.ccell{position:relative;cursor:context-menu}.ccell.c1{background:rgba(239,68,68,.25)}.ccell.c2{background:rgba(249,115,22,.25)}.ccell.c3{background:rgba(234,179,8,.25)}.ccell.c4{background:rgba(34,197,94,.25)}.ccell.c5{background:rgba(6,182,212,.25)}.ccell.c6{background:rgba(59,130,246,.25)}.ccell.c7{background:rgba(139,92,246,.25)}.ccell.c8{background:rgba(236,72,153,.25)}.ccell.c9{background:rgba(255,255,255,.15)}.ccell.c10{background:rgba(148,163,184,.2)}
-.cpal{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:950;padding:8px;display:flex;gap:5px;flex-wrap:wrap;width:140px}
+.ccell{position:relative;cursor:context-menu}.ccell.c1{background:rgba(239,68,68,.25)}.ccell.c2{background:rgba(249,115,22,.25)}.ccell.c3{background:rgba(234,179,8,.25)}.ccell.c4{background:rgba(34,197,94,.25)}.ccell.c5{background:rgba(6,182,212,.25)}.ccell.c6{background:rgba(59,130,246,.25)}.ccell.c7{background:rgba(139,92,246,.25)}.ccell.c8{background:rgba(236,72,153,.25)}.ccell.c9{background:rgba(255,255,255,.15)}.ccell.c10{background:rgba(148,163,184,.2)}.ccell.c11{background:rgba(161,98,7,.25)}.ccell.c12{background:rgba(19,78,74,.3)}.ccell.c13{background:rgba(23,37,84,.3)}.ccell.c14{background:rgba(74,25,66,.3)}
+.cpal{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:950;padding:8px;display:flex;gap:5px;flex-wrap:wrap;width:168px}
 .cpal-dot{width:22px;height:22px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:.15s}.cpal-dot:hover{border-color:var(--text);transform:scale(1.15)}
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:9px 16px;font-size:13px;z-index:2000;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
@@ -232,7 +233,6 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
     <div class="nav-r1" id="navr1">
       <div class="nsep" id="nsep"></div>
       <button class="nbtn" id="nav-og" onclick="goOg()">👥 Огляд</button>
-      <button class="nbtn" id="nav-bl" onclick="goBl()">🚫 Чорний список</button>
       <button class="nbtn" id="nav-st" onclick="goStats()">📈 Статистика</button>
       <button class="nbtn" id="nav-cf" onclick="goCfg()">⚙️</button>
       <button class="nbtn" onclick="doLogout()">🚪</button>
@@ -243,6 +243,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
       <span>—</span>
       <input type="date" id="dr-to" onchange="onDrChange()">
       <button class="btn sm ghost" onclick="clearDr()" style="padding:3px 8px;font-size:11px">✕</button>
+      <button class="btn sm ghost" onclick="openCond()" style="padding:3px 9px;font-size:11px;border-color:var(--yellow);color:var(--yellow)">📋 Умови</button>
       <span id="rbadge" class="rbadge"></span>
     </div>
   </div>
@@ -267,7 +268,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
           <button class="sfbtn fals" data-sf="False" onclick="setSF('False')">❌ False</button>
         </div>
       </div>
-      <div class="tw"><table><thead id="shead"></thead><tbody id="sbody"></tbody></table></div>
+      <div class="tw"><table><thead id="shead"></thead><tbody id="sbody"></tbody></table><div class="tw-spacer"></div></div>
 
       <div class="strip" id="sstrip"></div>
       <div class="tbar" id="tbar"></div>
@@ -308,9 +309,27 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 <div class="ctx" id="ctx" style="display:none"></div>
 <div class="toast" id="toast"></div>
 
+
+<!-- CONDITIONS MODAL -->
+<div id="m-cond" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border-radius:14px;width:min(500px,94vw);max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--border);box-shadow:var(--shadow)">
+    <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border)">
+      <span style="font-weight:700;font-size:15px">📋 Умови роботи</span>
+      <button onclick="closeCond()" style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:14px 16px">
+      <textarea id="cond-text" class="inp" rows="12" placeholder="Введіть умови роботи, правила, інструкції..." style="resize:vertical;min-height:200px;font-size:13px;line-height:1.6"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)">
+      <button class="btn" onclick="saveCond()">💾 Зберегти</button>
+      <button class="btn ghost" onclick="closeCond()">Скасувати</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
-const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null};
+const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null,clipboard:[]};
 
 // ── SUPABASE DB ──
 const _SB_URL='https://iojrkwpdomtcizsbyhio.supabase.co';
@@ -405,10 +424,20 @@ async function cfgAll(){
 
 // ── HELPERS ──
 function fmt(n){return Math.round(n||0).toLocaleString('uk-UA');}
-function getDaysInRange(dr){
+function getDaysInRange(dr,entries){
   if(!dr||(!dr.from&&!dr.to))return 30;
-  if(!dr.from||!dr.to)return 30;
-  const d=Math.round((new Date(dr.to)-new Date(dr.from))/(864e5))+1;
+  if(!dr.from)return 30;
+  // effective end = min(dr.to, last entry date) — string comparison works for ISO dates
+  let effTo=dr.to||'';
+  if(entries&&entries.length){
+    const maxDate=entries.reduce((m,e)=>{const d=(e.date||'').slice(0,10);return d>m?d:m;},'');
+    if(maxDate){
+      // use whichever is earlier: range end or last actual entry date
+      if(!effTo||maxDate<effTo)effTo=maxDate;
+    }
+  }
+  if(!effTo)return 30;
+  const d=Math.round((new Date(effTo)-new Date(dr.from))/(864e5))+1;
   return Math.max(1,d);
 }
 function entryDeposits(e){
@@ -453,12 +482,18 @@ async function doLogin(){
   else{document.getElementById('lerr').style.display='block';return;}
   document.getElementById('lerr').style.display='none';
   document.getElementById('lpass').value='';
+  // Remember for 7 days
+  localStorage.setItem('crm_role',G.role);
+  localStorage.setItem('crm_role_exp',Date.now()+7*864e5);
+  applyLogin();
+}
+function applyLogin(){
   document.getElementById('s-login').classList.add('h');
   document.getElementById('app').classList.remove('h');
   document.getElementById('rbadge').textContent=G.role==='admin'?'👑 Адмін':'👤 Менеджер';
-  await initApp();
+  initApp();
 }
-function doLogout(){G.role=null;G.svc=null;document.getElementById('app').classList.add('h');document.getElementById('s-login').classList.remove('h');}
+function doLogout(){G.role=null;G.svc=null;localStorage.removeItem('crm_role');localStorage.removeItem('crm_role_exp');document.getElementById('app').classList.add('h');document.getElementById('s-login').classList.remove('h');}
 
 // ── NAVIGATION ──
 async function initApp(){
@@ -482,9 +517,9 @@ async function buildNav(){
 }
 function hlNav(){
   document.querySelectorAll('.ntab').forEach(b=>b.classList.toggle('on',b.dataset.svc===G.svc));
-  ['nav-og','nav-bl','nav-st','nav-cf'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  ['nav-og','nav-st','nav-cf'].forEach(id=>document.getElementById(id).classList.remove('on'));
 }
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById(id).classList.add('on');if(window.attachScrollHide)setTimeout(window.attachScrollHide,100);}
 
 async function goSvc(svc){
   G.svc=svc;hlNav();
@@ -510,7 +545,6 @@ async function goStats(){
 }
 async function goBl(){
   G.svc=null;hlNav();
-  document.getElementById('nav-bl').classList.add('on');
   document.getElementById('navr2').classList.remove('show');
   showView('v-bl');renderBl();
 }
@@ -616,12 +650,14 @@ function emptyRow(c){return`<tr><td colspan="${c}"><div class="empty"><div class
 
 async function renderStrip(entries,svc,rates,dvOv){
   const ap=entries.filter(e=>e.status==='Approved'),wt=entries.filter(e=>e.status==='Waiting'),fl=entries.filter(e=>e.status==='False');
-  const totalDep=entries.reduce((s,e)=>s+entryDeposits(e),0),avgDep=ap.length?Math.round(totalDep/ap.length):0;
+  const totalDep=entries.reduce((s,e)=>s+entryDeposits(e),0);
+  const apDepSum=ap.reduce((s,e)=>s+entryDeposits(e),0),avgDep=ap.length?Math.round(apDepSum/ap.length):0;
   let extra='';
   if(G.role==='admin'){
     const totalExp=entries.reduce((s,e)=>s+entryExpenses(e,rates,dvOv),0);
     const cr=await cfg('casinoRates')||{},rateUSD=cr[svc]||0,rev=ap.length*rateUSD*G.usdRate,net=rev-totalExp;
     extra=`<div class="sc"><span class="sv b">₴${fmt(totalDep)}</span><span class="sl">Депозити</span></div>
+      <div class="sc"><span class="sv b">₴${fmt(avgDep)}</span><span class="sl">Сер.депозит</span></div>
       <div class="sc"><span class="sv">₴${fmt(totalExp)}</span><span class="sl">Витрати</span></div>
       ${rateUSD>0?`<div class="sc"><span class="sv g">₴${fmt(rev)}</span><span class="sl">Дохід</span></div>
       <div class="sc"><span class="sv ${net>=0?'g':'r'}">₴${fmt(net)}</span><span class="sl">Прибуток</span></div>`:''}`;
@@ -754,8 +790,6 @@ async function renderStats(){
 
     for(const svc of svcs){
       const dr=casinoDR[svc]||{from:'',to:''};
-      const days=getDaysInRange(dr);
-      gDays.push(days);
       const en=all.filter(e=>{
         if(e.service!==svc)return false;
         if(!dr.from&&!dr.to)return true;
@@ -764,6 +798,8 @@ async function renderStats(){
         if(dr.to&&d>dr.to)return false;
         return true;
       });
+      const days=getDaysInRange(dr,en);
+      gDays.push(days);
       const ap=en.filter(e=>e.status==='Approved'),wt=en.filter(e=>e.status==='Waiting'),fl=en.filter(e=>e.status==='False');
       // Expense breakdown
       let dvCosts=0,dropCosts=0,deposits=0;
@@ -1005,6 +1041,24 @@ function rowClick(ev,id){
   }
 }
 
+// ── COPY TO SYSTEM CLIPBOARD (TSV for Excel) ──
+async function copyEntriesToClipboard(entries){
+  const types=await cfg('svcTypes'),type=types[G.svc]||'casino';
+  let hdr,rows;
+  const v=v=>v===null||v===undefined||v===''?'':String(v);
+  if(type==='payment'||type==='paysera'||type==='banking'){
+    hdr=['Дроповод','Дроп','Дата','Час','Телефон','Email','Пароль','Пін','Статус','Нотатка'];
+    rows=entries.map(e=>[v(e.dropovod),v(e.drop),v(e.date),v(e.time),v(e.telephone),v(e.mail),v(e.password),v(e.pin),v(e.status),v(e.note)]);
+  } else {
+    hdr=['Дроповод','Дроп','Дата','Час','ID','Статус','FTD','D1','D2','D3','D4','D5','D6','D7','Нотатка'];
+    rows=entries.map(e=>{const d=e.deposits||[];return[v(e.dropovod),v(e.drop),v(e.date),v(e.time),v(e.accountId),v(e.status),v(e.ftd),...[0,1,2,3,4,5,6].map(i=>v(d[i])),v(e.note)];});
+  }
+  const txt=[hdr,...rows].map(r=>r.join('\t')).join('\n');
+  return navigator.clipboard.writeText(txt).then(()=>true).catch(()=>{
+    // fallback for file:// protocol
+    const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();return true;
+  });
+}
 async function eCtx(ev,id){
   ev.preventDefault();ev.stopPropagation();
   // Multi-select context menu
@@ -1016,6 +1070,8 @@ async function eCtx(ev,id){
       {l:'❌ False ('+ids.length+')',   c:'var(--red)',   a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){e.status='False';await db.put('entries',e);}}G.sel.clear();renderSvc();}},
       null,
       {l:'📋 Дублювати ('+ids.length+')',c:'var(--text)',a:async()=>{for(const i of ids){const e=await db.get('entries',i);if(e){const{id:_,createdAt:__,...rest}=e;await db.add('entries',{...rest,createdAt:new Date().toISOString(),archived:false});}}G.sel.clear();renderSvc();showToast('📋 Дубльовано');}},
+      {l:'📄 Копіювати ('+ids.length+')',c:'var(--accent)',a:async()=>{G.clipboard=[];const list=[];for(const i of ids){const e=await db.get('entries',i);if(e){const{id:_,createdAt:__,...rest}=e;G.clipboard.push(rest);list.push(e);}}await copyEntriesToClipboard(list);showToast('📄 Скопійовано: '+list.length+' рядків');}},
+      ...(G.clipboard.length?[{l:'📥 Вставити ('+G.clipboard.length+') сюди',c:'var(--accent)',a:async()=>{for(const r of G.clipboard){await db.add('entries',{...r,service:G.svc,createdAt:new Date().toISOString(),archived:false});}G.sel.clear();renderSvc();showToast('📥 Вставлено: '+G.clipboard.length);}}]:[]),
       {l:'🗑 Видалити ('+ids.length+')', c:'var(--red)', a:async()=>{if(confirm('Видалити '+ids.length+' записів?')){for(const i of ids)await db.del('entries',i);G.sel.clear();renderSvc();}}}
     ];
     showCtx(ev.clientX,ev.clientY,items);
@@ -1029,29 +1085,57 @@ async function eCtx(ev,id){
     null,
     {l:'✏️ Редагувати',c:'var(--text)',a:()=>openForm(id)},
     {l:'📋 Дублювати', c:'var(--text)',a:async()=>{const e=await db.get('entries',id);if(e){const{id:_,createdAt:__,...rest}=e;await db.add('entries',{...rest,createdAt:new Date().toISOString(),archived:false});renderSvc();showToast('📋 Дубльовано');}}},
+    {l:'📄 Копіювати', c:'var(--accent)',a:async()=>{const e=await db.get('entries',id);if(e){const{id:_,createdAt:__,...rest}=e;G.clipboard=[rest];await copyEntriesToClipboard([e]);showToast('📄 Скопійовано');}}},
+    ...(G.clipboard.length?[{l:'📥 Вставити ('+G.clipboard.length+') сюди',c:'var(--accent)',a:async()=>{for(const r of G.clipboard){await db.add('entries',{...r,service:G.svc,createdAt:new Date().toISOString(),archived:false});}renderSvc();showToast('📥 Вставлено: '+G.clipboard.length);}}]:[]),
     {l:'📦 Архівувати',c:'var(--muted)',a:async()=>{const e=await db.get('entries',id);e.archived=true;await db.put('entries',e);showToast('📦 Архівовано');renderSvc();}},
     {l:'🗑 Видалити',  c:'var(--red)', a:async()=>{if(confirm('Видалити?')){await db.del('entries',id);renderSvc();}}}
   ];
   showCtx(ev.clientX,ev.clientY,items);
 }
 function showCtx(x,y,items){
+  // Close color palette if open
+  if(_cpal){_cpal.remove();_cpal=null;}
   const m=document.getElementById('ctx');m._a=[];
   m.innerHTML=items.map((it,i)=>{
     if(!it)return`<div style="height:1px;background:var(--border);margin:3px 0"></div>`;
     m._a[i]=it.a;
-    return`<div class="ctx-i" style="color:${it.c}" onclick="ctxDo(${i})">${it.l}</div>`;
+    return`<div class="ctx-i" style="color:${it.c||'var(--text)'}" onclick="ctxDo(${i})">${it.l}</div>`;
   }).join('');
-  m.style.display='block';
-  m.style.left=Math.min(x,window.innerWidth-190)+'px';
-  m.style.top=Math.min(y,window.innerHeight-items.length*44-20)+'px';
+  // Correct for CSS zoom on html element
+  const z=parseFloat(getComputedStyle(document.documentElement).zoom)||1;
+  const ax=x/z, ay=y/z;
+  m.style.visibility='hidden';m.style.display='block';m.style.left='0px';m.style.top='0px';
+  const mw=m.offsetWidth||190, mh=m.offsetHeight||items.length*38+16;
+  m.style.visibility='';
+  const vpW=window.innerWidth/z, vpH=window.innerHeight/z;
+  const px=Math.max(4, Math.min(ax, vpW-mw-8));
+  const py=ay+mh>vpH ? Math.max(4, ay-mh) : ay;
+  m.style.left=px+'px';
+  m.style.top=py+'px';
+  setTimeout(()=>{_ctxOpen=true;},0);
 }
 function ctxDo(i){const m=document.getElementById('ctx');if(m._a[i])m._a[i]();closeCtx();}
-function closeCtx(){const m=document.getElementById('ctx');m.style.display='none';m._a=[];}
+let _ctxOpen=false;
+function closeCtx(){_ctxOpen=false;const m=document.getElementById('ctx');m.style.display='none';m._a=[];}
 
 // ── SETTINGS ──
 async function renderCfg(){
   const body=document.getElementById('cbody');
-  if(G.role!=='admin'){body.innerHTML='<div class="ccard"><p style="color:var(--muted)">Налаштування доступні лише адміністратору.</p></div>';return;}
+  if(G.role!=='admin'){
+    // Manager gets blacklist + archive access
+    const bl=await db.all('blacklist'),all=await db.all('entries');
+    body.innerHTML=`
+    <div class="ccard"><h3>🚫 Чорний список</h3>
+      <div id="bllist">${bl.length===0?'<p style="color:var(--muted);font-size:12px">Порожньо</p>':bl.map(b=>`<div class="blit"><span>${b.username}</span><button onclick="removeBl(${b.id})">🗑</button></div>`).join('')}</div>
+      <div class="fl" style="margin-top:9px;gap:7px"><input id="newbl" class="inp" style="flex:1" placeholder="@nickname"><button class="btn sm" onclick="addBl()">+ Додати</button></div>
+    </div>
+    <div class="ccard"><h3>📦 Архів</h3>
+      <p style="color:var(--muted);font-size:11px;margin-bottom:9px">Архівовані записи не відображаються в таблицях.</p>
+      <div id="arch-body"></div>
+    </div>`;
+    setTimeout(renderArchive,50);
+    return;
+  }
   const s=await cfgAll(),bl=await db.all('blacklist'),all=await db.all('entries');
   const dvSet=[...new Set(all.map(e=>e.dropovod).filter(Boolean))];
   const svcs=s.services||DEF.services,types=s.svcTypes||DEF.svcTypes,rates=s.expRates||DEF.expRates,dvOv=s.dvOverrides||{};
@@ -1189,11 +1273,13 @@ const CPAL_COLORS=[
   {cls:'c1',bg:'#ef4444'},{cls:'c2',bg:'#f97316'},{cls:'c3',bg:'#eab308'},
   {cls:'c4',bg:'#22c55e'},{cls:'c5',bg:'#06b6d4'},{cls:'c6',bg:'#3b82f6'},
   {cls:'c7',bg:'#8b5cf6'},{cls:'c8',bg:'#ec4899'},{cls:'c9',bg:'#ffffff'},
-  {cls:'c10',bg:'#94a3b8'}
+  {cls:'c10',bg:'#94a3b8'},{cls:'c11',bg:'#a16207'},
+  {cls:'c12',bg:'#134e4a'},{cls:'c13',bg:'#172554'},{cls:'c14',bg:'#4a1942'}
 ];
 let _cpal=null;
 async function cellCtx(ev,id,field){
   ev.preventDefault();ev.stopPropagation();
+  closeCtx(); // close row context menu if open
   if(_cpal){_cpal.remove();_cpal=null;}
   const e=await db.get('entries',id);if(!e)return;
   const cc=e.cellColors||{};
@@ -1216,11 +1302,21 @@ async function cellCtx(ev,id,field){
   clr.style.background='transparent';clr.style.border='2px dashed var(--muted)';
   clr.onclick=async()=>{delete cc[field];e.cellColors=cc;await db.put('entries',e);pal.remove();_cpal=null;renderSvc();};
   pal.appendChild(clr);
-  pal.style.left=Math.min(ev.clientX,window.innerWidth-150)+'px';
-  pal.style.top=Math.min(ev.clientY,window.innerHeight-80)+'px';
+  const _pz=parseFloat(getComputedStyle(document.documentElement).zoom)||1;
+  pal.style.left=Math.min(ev.clientX/_pz,(window.innerWidth/_pz)-150)+'px';
+  pal.style.top=Math.min(ev.clientY/_pz,(window.innerHeight/_pz)-80)+'px';
   document.body.appendChild(pal);
 }
-document.addEventListener('click',e=>{if(_cpal&&!_cpal.contains(e.target)){_cpal.remove();_cpal=null;}});
+// Capture phase for palette close — same pattern as ctx menu
+document.addEventListener('click',e=>{
+  if(_cpal){
+    if(!_cpal.contains(e.target)){
+      _cpal.remove();_cpal=null;
+      e.stopPropagation();
+    }
+    return;
+  }
+},true);
 
 function closeM(){document.getElementById('m-entry').classList.remove('open');}
 
@@ -1230,18 +1326,33 @@ function showToast(msg){
   clearTimeout(_toastTimer);_toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-let _lpTimer=null;
-document.addEventListener('touchstart',e=>{
-  const tgt=e.target.closest('[oncontextmenu]');if(!tgt)return;
-  _lpTimer=setTimeout(()=>{
-    const te=e.touches[0];
+// Double-tap → context menu on mobile (instead of long-press)
+let _dtLast=0,_dtTgt=null;
+document.addEventListener('touchend',e=>{
+  const tgt=e.target.closest('[oncontextmenu]');
+  if(!tgt)return;
+  const now=Date.now();
+  if(_dtTgt===tgt&&now-_dtLast<320){
+    e.preventDefault();
+    const te=e.changedTouches[0];
     const me=new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:te.clientX,clientY:te.clientY});
     tgt.dispatchEvent(me);
-  },600);
-},{passive:true});
-document.addEventListener('touchend',()=>{clearTimeout(_lpTimer);_lpTimer=null;},{passive:true});
-document.addEventListener('touchmove',()=>{clearTimeout(_lpTimer);_lpTimer=null;},{passive:true});
-document.addEventListener('click',e=>{if(!e.target.closest('#ctx'))closeCtx();});
+    _dtLast=0;_dtTgt=null;
+  } else {
+    _dtLast=now;_dtTgt=tgt;
+  }
+},{passive:false});
+// Capture phase: first click after ctx opens → only close, don't trigger underlying action
+document.addEventListener('click',e=>{
+  if(_ctxOpen){
+    if(!e.target.closest('#ctx')){
+      closeCtx();
+      e.stopPropagation();
+    }
+    return;
+  }
+},true);
+document.addEventListener('contextmenu',e=>{if(!e.target.closest('#ctx')&&!e.target.closest('[oncontextmenu]'))closeCtx();});
 document.addEventListener('keydown',e=>{
   // Ctrl+N — new entry
   if((e.ctrlKey||e.metaKey)&&(e.key==='n'||e.key==='b')){e.preventDefault();if(G.svc)openForm(null);}
@@ -1250,9 +1361,9 @@ document.addEventListener('keydown',e=>{
 });
 document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
 
-// ── MOBILE: hide all top UI on scroll down ──
+// ── SCROLL: hide top UI on scroll down, show on up (all devices) ──
 (function(){
-  let _lastY=0,_hidden=false;
+  let _lastY=0,_hidden=false,_attached=null;
   function setHidden(hide){
     if(_hidden===hide)return;
     _hidden=hide;
@@ -1260,17 +1371,24 @@ document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.
   }
   function onTWScroll(e){
     const y=e.target.scrollTop;
-    if(y>_lastY+12&&y>60) setHidden(true);
-    else if(y<_lastY-12) setHidden(false);
+    if(y>_lastY+18&&y>80) setHidden(true);
+    else if(y<_lastY-10) setHidden(false);
     _lastY=y;
   }
-  function attachTW(){
-    const tw=document.querySelector('.tw');
-    if(tw){tw.removeEventListener('scroll',onTWScroll);tw.addEventListener('scroll',onTWScroll,{passive:true});}
-    else setTimeout(attachTW,600);
-  }
-  attachTW();
-  document.addEventListener('click',()=>setTimeout(attachTW,400),{passive:true});
+  window.attachScrollHide=function(){
+    // reset state on every view switch
+    setHidden(false);
+    _lastY=0;
+    if(_attached){_attached.removeEventListener('scroll',onTWScroll);}
+    const tw=document.querySelector('.view.on .tw');
+    if(tw){tw.addEventListener('scroll',onTWScroll,{passive:true});_attached=tw;}
+    else{_attached=null;}
+  };
+  // Initial attach + re-attach on navigation clicks
+  setTimeout(window.attachScrollHide,300);
+  document.addEventListener('click',e=>{
+    if(e.target.closest('.ntab,.nbtn,.stab,.og-btn'))setTimeout(window.attachScrollHide,250);
+  },{passive:true});
 })();
 
 const SEED_BL=['@vika437891','@utther231','@valdiset','@vlgograd','@versach28','@olkakush','@dolmatov_vll','@woro2k1','@goykingggg','@katepro78','@katabaranec','@ok9oksanka','@bodyks','@deontey666','@burlak777777','@spasibo1994','@nazazik21'];
@@ -1449,8 +1567,28 @@ async function init(){
       regs.forEach(r=>r.unregister());
     });
   }
+  // Conditions modal click-outside
+  const mc=document.getElementById('m-cond');
+  if(mc)mc.addEventListener('click',e=>{if(e.target===e.currentTarget)closeCond();});
+  // Auto-login from localStorage (7-day remember)
+  (function(){
+    const role=localStorage.getItem('crm_role'),exp=parseInt(localStorage.getItem('crm_role_exp')||0);
+    if(role&&Date.now()<exp){G.role=role;applyLogin();}
+  })();
 }
 init();
+
+// ── CONDITIONS MODAL ──
+async function openCond(){
+  const text=await cfg('conditions')||'';
+  document.getElementById('cond-text').value=text;
+  document.getElementById('m-cond').style.display='flex';
+}
+function closeCond(){document.getElementById('m-cond').style.display='none';}
+async function saveCond(){
+  await setCfg('conditions',document.getElementById('cond-text').value);
+  closeCond();showToast('✅ Умови збережено');
+}
 </script>
 </body>
 </html>
