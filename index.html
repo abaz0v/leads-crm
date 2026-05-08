@@ -393,7 +393,7 @@ function entryDeposits(e){
   return[e.ftd,...(e.deposits||[])].filter(d=>d!==null&&d!==undefined&&d!=='').reduce((s,d)=>s+(parseFloat(d)||0),0);
 }
 function entryPersonnelCost(e,rates,dvOv){
-  if(e.status==='False')return 0;
+  if(e.status==='False'||e.status==='Waiting'||!e.status)return 0;
   // Payment-type entries store their pay directly
   if(e.dropPay!==undefined||e.dropovodPay!==undefined){
     return (e.dropovodPay||0)+(e.dropPay||0);
