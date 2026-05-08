@@ -1344,6 +1344,8 @@ document.addEventListener('touchstart',e=>{
 document.addEventListener('touchend',e=>{
   const tgt=e.target.closest('[oncontextmenu]');
   if(!tgt)return;
+  // If any menu/palette is open — let the click capture-handler close it, don't start double-tap logic
+  if(_ctxOpen||_cpal){clearTimeout(_dtTimer);_dtTgt=null;_dtLast=0;_blockRowClick=false;return;}
   // Cancel if moved (swipe/scroll) more than 10px
   const te=e.changedTouches[0];
   if(Math.abs(te.clientX-_dtSX)>10||Math.abs(te.clientY-_dtSY)>10){
