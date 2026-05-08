@@ -1029,7 +1029,9 @@ function setSF(v){
   });
   renderSvc();
 }
+let _blockRowClick=false;
 function rowClick(ev,id){
+  if(_blockRowClick){_blockRowClick=false;return;}
   if(ev.ctrlKey||ev.metaKey){
     ev.preventDefault();
     if(G.sel.has(id))G.sel.delete(id);else G.sel.add(id);
@@ -1061,6 +1063,7 @@ async function copyEntriesToClipboard(entries){
 }
 async function eCtx(ev,id){
   ev.preventDefault();ev.stopPropagation();
+  closeM(); // close any open form on mobile
   // Multi-select context menu
   if(G.sel.size>1&&G.sel.has(id)){
     const ids=[...G.sel];
@@ -1327,19 +1330,32 @@ function showToast(msg){
 }
 
 // Double-tap → context menu on mobile (instead of long-press)
-let _dtLast=0,_dtTgt=null;
+let _dtLast=0,_dtTgt=null,_dtTimer=null;
 document.addEventListener('touchend',e=>{
   const tgt=e.target.closest('[oncontextmenu]');
   if(!tgt)return;
   const now=Date.now();
   if(_dtTgt===tgt&&now-_dtLast<320){
+    // Second tap = double-tap → context menu
+    clearTimeout(_dtTimer);
+    _dtTgt=null;_dtLast=0;
+    _blockRowClick=true; // block rowClick from second tap's synthetic click
     e.preventDefault();
     const te=e.changedTouches[0];
     const me=new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:te.clientX,clientY:te.clientY});
     tgt.dispatchEvent(me);
-    _dtLast=0;_dtTgt=null;
+    setTimeout(()=>{_blockRowClick=false;},300);
   } else {
+    // First tap — block its rowClick, wait to see if double-tap follows
     _dtLast=now;_dtTgt=tgt;
+    _blockRowClick=true;
+    clearTimeout(_dtTimer);
+    _dtTimer=setTimeout(()=>{
+      // No second tap came → allow click normally
+      _blockRowClick=false;
+      _dtTgt=null;
+      tgt.click(); // fire deferred single tap
+    },300);
   }
 },{passive:false});
 // Capture phase: first click after ctx opens → only close, don't trigger underlying action
