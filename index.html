@@ -39,8 +39,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 #app.h{display:none}
 /* NAV */
 .nav{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0}
-.nav-r1{display:flex;align-items:center;padding:7px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px}
+.nav-wrap{display:flex;align-items:center;background:var(--card)}
+.nav-r1{display:flex;align-items:center;padding:7px 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px;flex:1;min-width:0}
 .nav-r1::-webkit-scrollbar{display:none}
+.nav-right{display:flex;align-items:center;gap:1px;padding:4px 5px;flex-shrink:0;border-left:1px solid var(--border)}
 .ntab{padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;transition:.2s;flex-shrink:0}
 .ntab:hover{border-color:var(--accent);color:var(--text)}
 .ntab.on{border-color:var(--accent);background:rgba(59,130,246,.2);color:var(--accent)}
@@ -230,12 +232,16 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 <!-- APP -->
 <div id="app" class="h">
   <div class="nav">
-    <div class="nav-r1" id="navr1">
-      <div class="nsep" id="nsep"></div>
-      <button class="nbtn" id="nav-og" onclick="goOg()">👥 Огляд</button>
-      <button class="nbtn" id="nav-st" onclick="goStats()">📈 Статистика</button>
-      <button class="nbtn" id="nav-cf" onclick="goCfg()">⚙️</button>
-      <button class="nbtn" onclick="doLogout()">🚪</button>
+    <div class="nav-wrap">
+      <div class="nav-r1" id="navr1">
+        <div class="nsep" id="nsep"></div>
+      </div>
+      <div class="nav-right">
+        <button class="nbtn" id="nav-og" onclick="goOg()" title="Огляд">👥</button>
+        <button class="nbtn" id="nav-st" onclick="goStats()" title="Статистика">📈</button>
+        <button class="nbtn" id="nav-cf" onclick="goCfg()" title="Налаштування">⚙️</button>
+        <button class="nbtn" onclick="doLogout()" title="Вийти">⍈</button>
+      </div>
     </div>
     <div class="nav-r2" id="navr2">
       <span>📅</span>
@@ -314,7 +320,7 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 <div id="m-cond" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px">
   <div style="background:var(--card);border-radius:14px;width:min(500px,94vw);max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--border);box-shadow:var(--shadow)">
     <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border)">
-      <span style="font-weight:700;font-size:15px">📋 Умови роботи</span>
+      <span class="cond-title" style="font-weight:700;font-size:15px">📋 Умови роботи</span>
       <button onclick="closeCond()" style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">×</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:14px 16px">
@@ -425,20 +431,20 @@ async function cfgAll(){
 // ── HELPERS ──
 function fmt(n){return Math.round(n||0).toLocaleString('uk-UA');}
 function getDaysInRange(dr,entries){
-  if(!dr||(!dr.from&&!dr.to))return 30;
-  if(!dr.from)return 30;
-  // effective end = min(dr.to, last entry date) — string comparison works for ISO dates
+  // No range set → no proportional cost calculation
+  if(!dr||(!dr.from&&!dr.to))return 0;
+  if(!dr.from)return 0;
+  // No entries → don't count days even if range is set
+  if(entries&&entries.length===0)return 0;
+  // Effective end = min(dr.to, last actual entry date)
   let effTo=dr.to||'';
   if(entries&&entries.length){
     const maxDate=entries.reduce((m,e)=>{const d=(e.date||'').slice(0,10);return d>m?d:m;},'');
-    if(maxDate){
-      // use whichever is earlier: range end or last actual entry date
-      if(!effTo||maxDate<effTo)effTo=maxDate;
-    }
+    if(maxDate&&(!effTo||maxDate<effTo))effTo=maxDate;
   }
-  if(!effTo)return 30;
+  if(!effTo)return 0;
   const d=Math.round((new Date(effTo)-new Date(dr.from))/(864e5))+1;
-  return Math.max(1,d);
+  return Math.max(0,d);
 }
 function entryDeposits(e){
   return[e.ftd,...(e.deposits||[])].filter(d=>d!==null&&d!==undefined&&d!=='').reduce((s,d)=>s+(parseFloat(d)||0),0);
@@ -821,7 +827,7 @@ async function renderStats(){
     }
 
     // Global ad/sub with average days
-    const avgDays=gDays.length?gDays.reduce((s,d)=>s+d,0)/gDays.length:30;
+    const nonZeroDays=gDays.filter(d=>d>0);const avgDays=nonZeroDays.length?nonZeroDays.reduce((s,d)=>s+d,0)/nonZeroDays.length:0;
     const gAdProp=proportionalMonthly(adM,avgDays),gSubProp=proportionalMonthly(subM,avgDays);
     const gNet=gRevenue-gTotalExp-gAdProp-gSubProp;
 
@@ -1330,18 +1336,26 @@ function showToast(msg){
 }
 
 // Double-tap → context menu on mobile (instead of long-press)
-let _dtLast=0,_dtTgt=null,_dtTimer=null;
+let _dtLast=0,_dtTgt=null,_dtTimer=null,_dtSX=0,_dtSY=0;
+document.addEventListener('touchstart',e=>{
+  const tgt=e.target.closest('[oncontextmenu]');
+  if(tgt){_dtSX=e.touches[0].clientX;_dtSY=e.touches[0].clientY;}
+},{passive:true});
 document.addEventListener('touchend',e=>{
   const tgt=e.target.closest('[oncontextmenu]');
   if(!tgt)return;
+  // Cancel if moved (swipe/scroll) more than 10px
+  const te=e.changedTouches[0];
+  if(Math.abs(te.clientX-_dtSX)>10||Math.abs(te.clientY-_dtSY)>10){
+    clearTimeout(_dtTimer);_blockRowClick=false;_dtTgt=null;_dtLast=0;return;
+  }
   const now=Date.now();
   if(_dtTgt===tgt&&now-_dtLast<320){
     // Second tap = double-tap → context menu
     clearTimeout(_dtTimer);
     _dtTgt=null;_dtLast=0;
-    _blockRowClick=true; // block rowClick from second tap's synthetic click
+    _blockRowClick=true;
     e.preventDefault();
-    const te=e.changedTouches[0];
     const me=new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:te.clientX,clientY:te.clientY});
     tgt.dispatchEvent(me);
     setTimeout(()=>{_blockRowClick=false;},300);
@@ -1350,11 +1364,10 @@ document.addEventListener('touchend',e=>{
     _dtLast=now;_dtTgt=tgt;
     _blockRowClick=true;
     clearTimeout(_dtTimer);
+    const savedTgt=tgt;
     _dtTimer=setTimeout(()=>{
-      // No second tap came → allow click normally
-      _blockRowClick=false;
-      _dtTgt=null;
-      tgt.click(); // fire deferred single tap
+      _blockRowClick=false;_dtTgt=null;
+      savedTgt.click();
     },300);
   }
 },{passive:false});
@@ -1371,7 +1384,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('contextmenu',e=>{if(!e.target.closest('#ctx')&&!e.target.closest('[oncontextmenu]'))closeCtx();});
 document.addEventListener('keydown',e=>{
   // Ctrl+N — new entry
-  if((e.ctrlKey||e.metaKey)&&(e.key==='n'||e.key==='b')){e.preventDefault();if(G.svc)openForm(null);}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='n'||e.key==='b'||e.code==='KeyN'||e.code==='KeyB')){e.preventDefault();if(G.svc)openForm(null);}
   // Escape — clear selection
   if(e.key==='Escape'){G.sel.clear();document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));}
 });
@@ -1596,13 +1609,16 @@ init();
 
 // ── CONDITIONS MODAL ──
 async function openCond(){
-  const text=await cfg('conditions')||'';
+  const key='conditions'+(G.svc?'_'+G.svc:'');
+  const text=await cfg(key)||'';
   document.getElementById('cond-text').value=text;
+  document.querySelector('#m-cond .cond-title').textContent='📋 Умови'+(G.svc?' — '+G.svc:'');
   document.getElementById('m-cond').style.display='flex';
 }
 function closeCond(){document.getElementById('m-cond').style.display='none';}
 async function saveCond(){
-  await setCfg('conditions',document.getElementById('cond-text').value);
+  const key='conditions'+(G.svc?'_'+G.svc:'');
+  await setCfg(key,document.getElementById('cond-text').value);
   closeCond();showToast('✅ Умови збережено');
 }
 </script>
