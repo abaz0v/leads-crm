@@ -1,25 +1,9 @@
-const CACHE = 'leads-crm-v2';
-const ASSETS = [
-  '/leads-crm/',
-  '/leads-crm/index.html',
-  '/leads-crm/manifest.json'
-];
-
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).catch(() => {}));
-  self.skipWaiting();
-});
-
+// Self-destruct: unregister and clear all caches
+self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-      .catch(() => caches.match('/leads-crm/index.html'))
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => self.registration.unregister())
   );
+  self.clients.claim();
 });

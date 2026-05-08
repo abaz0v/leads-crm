@@ -1373,7 +1373,12 @@ async function init(){
   await seedBlacklist();
   initRealtime();
   setInterval(pollSync,5000);
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+  // Unregister old service workers (prevent stale cache)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>r.unregister());
+    });
+  }
 }
 init();
 </script>
