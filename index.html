@@ -1244,7 +1244,7 @@ document.addEventListener('touchmove',()=>{clearTimeout(_lpTimer);_lpTimer=null;
 document.addEventListener('click',e=>{if(!e.target.closest('#ctx'))closeCtx();});
 document.addEventListener('keydown',e=>{
   // Ctrl+N — new entry
-  if((e.ctrlKey||e.metaKey)&&e.key==='n'){e.preventDefault();if(G.svc)openForm(null);}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='n'||e.key==='b')){e.preventDefault();if(G.svc)openForm(null);}
   // Escape — clear selection
   if(e.key==='Escape'){G.sel.clear();document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));}
 });
