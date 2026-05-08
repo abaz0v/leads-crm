@@ -34,8 +34,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 #app.h{display:none}
 /* NAV */
 .nav{background:var(--card);border-bottom:1px solid var(--border);flex-shrink:0}
-.nav-r1{display:flex;align-items:center;padding:7px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px;transition:max-height .25s,padding .25s,opacity .25s;max-height:60px;opacity:1;overflow:hidden}
-.nav-r1.nav-hidden{max-height:0;padding-top:0;padding-bottom:0;opacity:0;pointer-events:none}
+.nav-r1{display:flex;align-items:center;padding:7px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:4px}
 .nav-r1::-webkit-scrollbar{display:none}
 .ntab{padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;transition:.2s;flex-shrink:0}
 .ntab:hover{border-color:var(--accent);color:var(--text)}
@@ -1173,28 +1172,30 @@ document.addEventListener('touchmove',()=>{clearTimeout(_lpTimer);_lpTimer=null;
 document.addEventListener('click',e=>{if(!e.target.closest('#ctx'))closeCtx();});
 document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
 
-// ── MOBILE: hide nav on scroll down ──
+// ── MOBILE: hide nav-r1 on scroll down in table ──
 (function(){
-  let lastY=0,ticking=false;
-  function onScroll(){
-    const tw=document.querySelector('.tw');
-    if(!tw)return;
-    const y=tw.scrollTop;
+  let _lastY=0,_navUp=false,_timer=null;
+  function applyNav(hide){
     const nr=document.getElementById('navr1');
-    if(!nr)return;
-    if(y>lastY&&y>40){nr.classList.add('nav-hidden');}
-    else{nr.classList.remove('nav-hidden');}
-    lastY=y;ticking=false;
+    if(!nr||_navUp===hide)return;
+    _navUp=hide;
+    nr.style.display=hide?'none':'flex';
   }
-  document.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(onScroll);ticking=true;}},{passive:true});
-  // also watch the table wrapper scroll
+  function onTWScroll(){
+    const tw=document.querySelector('.tw');if(!tw)return;
+    const y=tw.scrollTop;
+    if(y>_lastY+8&&y>50) applyNav(true);
+    else if(y<_lastY-8) applyNav(false);
+    _lastY=y;
+  }
   function attachTW(){
     const tw=document.querySelector('.tw');
-    if(tw){
-      tw.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(onScroll);ticking=true;}},{passive:true});
-    } else {setTimeout(attachTW,500);}
+    if(tw){tw.addEventListener('scroll',onTWScroll,{passive:true});}
+    else{setTimeout(attachTW,600);}
   }
   attachTW();
+  // Also re-attach after view changes (tab switches)
+  document.addEventListener('click',()=>{setTimeout(attachTW,400);},{passive:true});
 })();
 
 const SEED_BL=['@vika437891','@utther231','@valdiset','@vlgograd','@versach28','@olkakush','@dolmatov_vll','@woro2k1','@goykingggg','@katepro78','@katabaranec','@ok9oksanka','@bodyks','@deontey666','@burlak777777','@spasibo1994','@nazazik21'];
@@ -1305,9 +1306,69 @@ async function exportExcel(){
   showToast('📊 Excel експортовано!');
 }
 
+
+// ── REAL-TIME SYNC (Supabase Realtime) ──
+function refreshCurrentView(){
+  try{
+    if(document.getElementById('v-svc')&&document.getElementById('v-svc').classList.contains('on')) renderSvc();
+    else if(document.getElementById('v-stats')&&document.getElementById('v-stats').classList.contains('on')) renderStats();
+    else if(document.getElementById('v-bl')&&document.getElementById('v-bl').classList.contains('on')) renderBl();
+  }catch(e){}
+}
+
+function initRealtime(){
+  let ws=null,hb=null,retryT=null;
+  function connect(){
+    try{
+      ws=new WebSocket('wss://iojrkwpdomtcizsbyhio.supabase.co/realtime/v1/websocket?apikey='+_SB_KEY+'&vsn=1.0.0');
+      ws.onopen=()=>{
+        ws.send(JSON.stringify({
+          topic:'realtime:db',event:'phx_join',
+          payload:{config:{postgres_changes:[
+            {event:'*',schema:'public',table:'entries'},
+            {event:'*',schema:'public',table:'settings'},
+            {event:'*',schema:'public',table:'blacklist'}
+          ]}},ref:'1'
+        }));
+        hb=setInterval(()=>{
+          if(ws.readyState===1)ws.send(JSON.stringify({topic:'phoenix',event:'heartbeat',payload:{},ref:String(Date.now())}));
+        },25000);
+      };
+      ws.onmessage=e=>{
+        try{
+          const msg=JSON.parse(e.data);
+          if(msg.event==='postgres_changes'&&msg.payload&&msg.payload.data){
+            setTimeout(refreshCurrentView,200);
+          }
+        }catch(ex){}
+      };
+      ws.onerror=()=>{ws.close();};
+      ws.onclose=()=>{
+        clearInterval(hb);
+        retryT=setTimeout(connect,5000);
+      };
+    }catch(ex){retryT=setTimeout(connect,8000);}
+  }
+  connect();
+}
+
+// Polling fallback (every 12s) for settings changes (rate, ставка etc.)
+let _pollHash='';
+async function pollSync(){
+  try{
+    const r=await _sbFetch('entries?select=id&order=id.desc&limit=1&created_at=not.is.null')||[];
+    const s=await _sbFetch('settings?select=key,value&key=eq._ts')||[];
+    const h=JSON.stringify(r)+JSON.stringify(s);
+    if(_pollHash&&h!==_pollHash) refreshCurrentView();
+    _pollHash=h;
+  }catch(ex){}
+}
+
 async function init(){
   await fetchUsdRate();
   await seedBlacklist();
+  initRealtime();
+  setInterval(pollSync,12000);
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 init();
