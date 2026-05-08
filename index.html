@@ -567,7 +567,7 @@ async function renderSvc(){
         <td>${e.telephone||'—'}</td><td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;font-size:11px">${e.mail||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.password||'—'}</td>
         <td style="font-size:11px;color:var(--muted)">${e.pin||'—'}</td>
-        ${G.role==='admin'?`<td style="color:var(--green)">₴${e.dropovod?(e.dropovodPay||0):(e.dropPay||0)}</td>`:''}        <td>${e.waitUntil?(()=>{const today=new Date().toISOString().slice(0,10);const over=e.waitUntil<=today;return(over?'❗ ':'')+e.waitUntil;})():'—'}</td><td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td></tr>`;
+        ${G.role==='admin'?`<td style="color:var(--green)">${e.status==='Approved'?'₴'+(e.dropovod?(e.dropovodPay||0):(e.dropPay||0)):'—'}</td>`:''}        <td>${e.waitUntil?(()=>{const today=new Date().toISOString().slice(0,10);const over=e.waitUntil<=today;return(over?'❗ ':'')+e.waitUntil;})():'—'}</td><td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td></tr>`;
     }).join(''):emptyRow(10);
   } else {
     sh.innerHTML=`<tr><th class="s0" style="left:0">Дроповод</th><th class="s1" style="left:90px">Дроп</th><th>Дата/Час</th><th>ID</th><th>FTD</th><th>D1</th><th>D2</th><th>D3</th><th>D4</th><th>D5</th><th>D6</th><th>D7</th><th>Статус</th>${G.role==='admin'?'<th>Витрати</th>':''}</tr>`;
