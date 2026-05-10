@@ -151,7 +151,8 @@ tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 .stag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;background:var(--card2);border:1px solid var(--border);font-size:12px;font-weight:600;margin:3px}
 .stag button{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
 .blit{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
-tr.sel-row>td{background:rgba(59,130,246,.18)!important}
+tr.sel-row>td:not(.ccell){background:rgba(59,130,246,.18)!important}
+tr.sel-row>td.ccell{outline:2px solid rgba(59,130,246,.7);outline-offset:-2px}
 [data-dup="1"]{color:var(--yellow)!important;font-weight:700}
 .cpnick{cursor:pointer!important}
 .cpnick:hover{background:rgba(99,179,237,.12)!important;border-radius:4px}
@@ -226,6 +227,14 @@ hr.t{border:none;border-top:1px solid var(--border);margin:9px 0}
 .sfbtn.fals.on{border-color:var(--red);background:rgba(239,68,68,.15);color:var(--red)}
 /* NOTE CELL */
 .ncell{text-align:center;cursor:help;font-size:13px}
+/* CALC BAR */
+.calc-bar{position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--card2);border-top:2px solid var(--accent);padding:8px 12px;display:none;align-items:center;gap:7px;flex-wrap:wrap;box-shadow:0 -4px 20px rgba(0,0,0,.4)}
+.calc-bar.show{display:flex}
+.calc-chip{background:rgba(59,130,246,.25);border:1.5px solid var(--accent);color:var(--accent);border-radius:6px;padding:3px 10px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.calc-chip:hover{background:rgba(59,130,246,.4)}
+.calc-sum{font-size:15px;font-weight:800;color:var(--green);margin-left:auto}
+.calc-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:0 4px}
+td.calc-on{outline:2px solid var(--accent)!important;outline-offset:-2px;cursor:pointer}
 /* Дроп right-fade — права половина стікі колонки трохи прозора */
 td.s1::after,.og-drop-td::after{content:'';position:absolute;right:0;top:0;width:50%;height:100%;background:linear-gradient(to right,transparent,rgba(15,23,42,.55));pointer-events:none;z-index:1}
 </style>
@@ -389,6 +398,14 @@ td.s1::after,.og-drop-td::after{content:'';position:absolute;right:0;top:0;width
       <button class="btn ghost" onclick="closeCond()">Скасувати</button>
     </div>
   </div>
+</div>
+
+<!-- CALC BAR -->
+<div class="calc-bar" id="calc-bar">
+  <span style="font-size:11px;color:var(--muted);white-space:nowrap">🧮 Alt+Click:</span>
+  <div id="calc-chips" style="display:flex;gap:6px;flex-wrap:wrap;flex:1"></div>
+  <span class="calc-sum" id="calc-sum">₴0</span>
+  <button class="calc-close" onclick="calcClear()" title="Закрити">✕</button>
 </div>
 
 <script>
@@ -699,15 +716,18 @@ async function renderSvc(){
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
       const deps=e.deposits||[];
       const cc=e.cellColors||{};
-      const dc2=[0,1,2,3,4,5,6].map(i=>{const v=deps[i],cl=cc['d'+i]?'ccell '+cc['d'+i]:'ccell';return v===undefined||v===null||v===''?`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">—</td>`:`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:${v==0?'var(--border)':'var(--text)'}">${v}</td>`;}).join('');
+      const dc2=[0,1,2,3,4,5,6].map(i=>{const v=deps[i],cl=cc['d'+i]?'ccell '+cc['d'+i]:'ccell';
+        if(v===undefined||v===null||v==='')return`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">—</td>`;
+        return`<td class="${cl}" data-eid="${e.id}" data-fld="d${i}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'d${i}',${v},this)}" style="color:${v==0?'var(--border)':'var(--text)'}">${v}</td>`;}).join('');
       const exp=G.role==='admin'?`<td style="color:var(--muted);font-size:11px">₴${fmt(entryExpenses(e,rates,dvOv))}</td>`:'';
+      const _ftdV=(e.ftd!==null&&e.ftd!==undefined&&e.ftd!=='');
       const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
         <td class="s0">${idx+1}</td>
         <td style="font-size:11px">${(e.time||'').slice(0,5)} ${(e.date||'').slice(5,10)}</td>
         <td class="cpnick" onclick="cpNick(event,'${e.dropovod||''}')" style="font-size:11px;color:var(--muted)">${e.dropovod||'—'}</td>
         <td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
         <td style="font-size:10px" data-dup="${idDup?1:0}">${e.accountId||'—'}</td>
-        <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}</td>${dc2}
+        <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" ${_ftdV?`data-eid="${e.id}" data-fld="ftd" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'ftd',${e.ftd},this)}"`:''}oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}</td>${dc2}
         <td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${exp}${noteCell(e)}</tr>`;
     }).join(''):emptyRow(18);
   }
@@ -746,6 +766,7 @@ async function renderStrip(entries,svc,rates,dvOv){
     tbar.innerHTML=`<span>🎯 Ціль: <b>${tgt}</b></span><span style="color:var(--green)">✅ ${ap.length}</span><span style="color:${rem>0?'var(--yellow)':'var(--green)'}">Залишилось: <b>${rem}</b></span><div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:11px;color:var(--muted)">${pct}%</span>`;
     tbar.classList.add('show');
   } else {tbar.classList.remove('show');}
+  calcReapply(); // відновити підсвітку калькулятора після ре-рендеру
 }
 
 // ── OGLYAD VIEW ──
@@ -1146,12 +1167,80 @@ async function saveEntry(){
     obj.deposits=deps;
   }
   obj.note=(document.getElementById('fnote')||{}).value||'';
-  if(G.editId){obj.id=G.editId;await db.put('entries',obj);}else await db.add('entries',obj);
+  if(G.editId){
+    const _prev=await db.get('entries',G.editId);
+    obj.id=G.editId;
+    if(_prev&&_prev.cellColors)obj.cellColors=_prev.cellColors; // зберегти кольори комірок
+    _pushHistory({type:'put',id:G.editId,before:_prev,after:{...obj}});
+    await db.put('entries',obj);
+  } else {
+    const _newId=await db.add('entries',obj);
+    _pushHistory({type:'add',id:_newId,after:{...obj,id:_newId}});
+  }
   closeM();renderSvc();showToast('✅ Збережено');
 }
 
-async function delEntry(id){if(!confirm('Видалити?'))return;await db.del('entries',id);closeM();renderSvc();showToast('🗑 Видалено');}
-async function setStatus(id,st){const e=await db.get('entries',id);if(e){e.status=st;await db.put('entries',e);}}
+async function delEntry(id){
+  if(!confirm('Видалити?'))return;
+  const _prev=await db.get('entries',id);
+  _pushHistory({type:'del',id,before:_prev});
+  await db.del('entries',id);closeM();renderSvc();showToast('🗑 Видалено');
+}
+
+// ── UNDO / REDO ──
+const _history=[],_redoStack=[];
+function _pushHistory(a){_history.push(a);_redoStack.length=0;}
+async function undoLast(){
+  if(!_history.length){showToast('↩ Нічого скасовувати');return;}
+  const a=_history.pop();_redoStack.push(a);
+  if(a.type==='add'){await db.del('entries',a.id);}
+  else if(a.type==='put'){if(a.before)await db.put('entries',a.before);else await db.del('entries',a.id);}
+  else if(a.type==='del'){await db.add('entries',a.before);}
+  renderSvc();showToast('↩ Скасовано');
+}
+async function redoLast(){
+  if(!_redoStack.length){showToast('↪ Нічого повертати');return;}
+  const a=_redoStack.pop();_history.push(a);
+  if(a.type==='add'){await db.add('entries',a.after);}
+  else if(a.type==='put'){await db.put('entries',a.after);}
+  else if(a.type==='del'){await db.del('entries',a.id);}
+  renderSvc();showToast('↪ Повернено');
+}
+
+// ── CALC BAR ──
+let _calcItems=[];
+function calcToggle(entryId,field,value,cellEl){
+  const key=entryId+'|'+field;
+  const idx=_calcItems.findIndex(x=>x.key===key);
+  if(idx>=0){_calcItems.splice(idx,1);cellEl.classList.remove('calc-on');}
+  else{_calcItems.push({key,entryId,field,value});cellEl.classList.add('calc-on');}
+  calcRender();
+}
+function calcReapply(){
+  // після ре-рендеру таблиці — відновити підсвітку calc-on
+  _calcItems.forEach(x=>{
+    const el=document.querySelector(`td[data-eid="${x.entryId}"][data-fld="${x.field}"]`);
+    if(el)el.classList.add('calc-on');
+  });
+}
+function calcRender(){
+  const bar=document.getElementById('calc-bar');
+  if(!_calcItems.length){bar.classList.remove('show');return;}
+  bar.classList.add('show');
+  const total=_calcItems.reduce((s,x)=>s+(parseFloat(x.value)||0),0);
+  document.getElementById('calc-chips').innerHTML=_calcItems.map((x,i)=>
+    `<span class="calc-chip" onclick="calcRemoveIdx(${i})">₴${x.value} ✕</span>`).join('');
+  document.getElementById('calc-sum').textContent='= ₴'+Math.round(total).toLocaleString('uk-UA');
+}
+function calcRemoveIdx(i){
+  _calcItems.splice(i,1);calcRender();
+  document.querySelectorAll('td.calc-on').forEach(el=>{
+    const key=(el.dataset.eid||'')+'|'+(el.dataset.fld||'');
+    if(!_calcItems.find(x=>x.key===key))el.classList.remove('calc-on');
+  });
+}
+function calcClear(){_calcItems=[];calcRender();document.querySelectorAll('td.calc-on').forEach(el=>el.classList.remove('calc-on'));}
+async function setStatus(id,st){const _prev=await db.get('entries',id);if(_prev){const _after={..._prev,status:st};_pushHistory({type:'put',id,before:_prev,after:_after});await db.put('entries',_after);}}
 
 // ── CONTEXT MENU ──
 
@@ -1519,11 +1608,26 @@ document.addEventListener('click',e=>{
   }
 },true);
 document.addEventListener('contextmenu',e=>{if(!e.target.closest('#ctx')&&!e.target.closest('[oncontextmenu]'))closeCtx();});
-document.addEventListener('keydown',e=>{
+document.addEventListener('keydown',async e=>{
+  const inInput=e.target.matches('input,textarea,select');
   // Ctrl+N — new entry
   if((e.ctrlKey||e.metaKey)&&(e.key==='n'||e.key==='b'||e.code==='KeyN'||e.code==='KeyB')){e.preventDefault();if(G.svc)openForm(null);}
-  // Escape — clear selection
-  if(e.key==='Escape'){G.sel.clear();document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));}
+  // Ctrl+Z — undo
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.code==='KeyZ'&&!inInput){e.preventDefault();await undoLast();}
+  // Ctrl+Shift+Z — redo
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.code==='KeyZ'&&!inInput){e.preventDefault();await redoLast();}
+  // Delete — видалити виділені рядки
+  if(e.key==='Delete'&&G.sel.size>0&&!inInput){
+    e.preventDefault();
+    if(!confirm('Видалити '+G.sel.size+' записів?'))return;
+    for(const id of G.sel){const _p=await db.get('entries',id);_pushHistory({type:'del',id,before:_p});await db.del('entries',id);}
+    G.sel.clear();renderSvc();showToast('🗑 Видалено');
+  }
+  // Escape — clear selection + calc
+  if(e.key==='Escape'){
+    G.sel.clear();document.querySelectorAll('tr.sel-row').forEach(r=>r.classList.remove('sel-row'));
+    calcClear();
+  }
 });
 document.getElementById('m-entry').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
 
