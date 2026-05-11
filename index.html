@@ -869,7 +869,22 @@ function setStatsPeriod(type){
     G.statsPeriod={from:`${y}-01-01`,to:todayKyiv,label:`${y} рік`};
   } else if(type==='reset'){
     G.statsPeriod=null;
+    G._showCustom=false;
   }
+  renderStats();
+}
+function toggleCustomPeriod(){
+  G._showCustom=!G._showCustom;
+  if(!G._showCustom&&G.statsPeriod?.custom)G.statsPeriod=null;
+  const w=document.getElementById('sp-custom-wrap');
+  if(w)w.style.display=G._showCustom?'flex':'none';
+}
+function applyCustomPeriod(){
+  const f=document.getElementById('sp-from')?.value;
+  const t=document.getElementById('sp-to')?.value;
+  if(!f)return;
+  G.statsPeriod={from:f,to:t||f,label:'Свій: '+f.slice(5)+(t&&t!==f?'–'+t.slice(5):''),custom:true};
+  G._showCustom=true;
   renderStats();
 }
 async function renderStats(){
@@ -898,10 +913,16 @@ async function renderStats(){
     const spBar=`<div class="sp-bar">
       <span class="sp-lbl">📅 Показати за:</span>
       <button class="sp-btn ${!sp?'on':''}" onclick="setStatsPeriod('reset')">По діапазонах</button>
-      <button class="sp-btn ${sp&&sp.label&&sp.label.includes('рік')?'on':''}" onclick="setStatsPeriod('year')">Цей рік</button>
-      <button class="sp-btn ${sp&&sp.label==='Мин. місяць'?'on':''}" onclick="setStatsPeriod('prev')">Мин. місяць</button>
-      <button class="sp-btn ${sp&&sp.label&&!sp.label.includes('рік')&&sp.label!=='Мин. місяць'?'on':''}" onclick="setStatsPeriod('month')">Цей місяць</button>
-      ${sp?`<span style="font-size:11px;color:var(--accent);margin-left:4px">· ${sp.label}</span>`:''}
+      <button class="sp-btn ${sp&&!sp.custom&&sp.label&&sp.label.includes('рік')?'on':''}" onclick="setStatsPeriod('year')">Цей рік</button>
+      <button class="sp-btn ${sp&&!sp.custom&&sp.label==='Мин. місяць'?'on':''}" onclick="setStatsPeriod('prev')">Мин. місяць</button>
+      <button class="sp-btn ${sp&&!sp.custom&&sp.label&&!sp.label.includes('рік')&&sp.label!=='Мин. місяць'?'on':''}" onclick="setStatsPeriod('month')">Цей місяць</button>
+      <button class="sp-btn ${sp?.custom?'on':''}" onclick="toggleCustomPeriod()">📆 Свій</button>
+      <span id="sp-custom-wrap" style="display:${(sp?.custom||G._showCustom)?'flex':'none'};align-items:center;gap:4px;margin-left:4px">
+        <input type="date" id="sp-from" class="ri2" style="width:118px" value="${sp?.custom?sp.from:''}" onchange="applyCustomPeriod()">
+        <span style="font-size:11px;color:var(--muted)">–</span>
+        <input type="date" id="sp-to" class="ri2" style="width:118px" value="${sp?.custom?sp.to:''}" onchange="applyCustomPeriod()">
+      </span>
+      ${sp&&!sp.custom?`<span style="font-size:11px;color:var(--accent);margin-left:4px">· ${sp.label}</span>`:''}
     </div>`;
 
     // Per-casino filtered by effective date ranges
@@ -955,10 +976,8 @@ async function renderStats(){
       gRevenue+=revenue;gTotalExp+=totalExp;gAdjTotal+=adjTotal;
     }
 
-    // Global days: period filter → actual first→last entry span; по діапазонах → avg of per-service ranges
-    const globalDays=sp
-      ? ((gMinDate&&gMaxDate)?Math.round((new Date(gMaxDate)-new Date(gMinDate))/(864e5))+1:0)
-      : (gDays.filter(d=>d>0).reduce((s,d,_,a)=>s+d/a.length,0)||0);
+    // Global days: actual first→last entry span across all filtered entries
+    const globalDays=(gMinDate&&gMaxDate)?Math.round((new Date(gMaxDate)-new Date(gMinDate))/(864e5))+1:0;
     const gAdProp=proportionalMonthly(adM,globalDays),gSubProp=proportionalMonthly(subM,globalDays);
     const gNet=gRevenue-gTotalExp-gAdjTotal-gAdProp-gSubProp;
 
