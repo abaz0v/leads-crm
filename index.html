@@ -85,7 +85,7 @@ tr.sel-row>td.s0,tr.sel-row>td.s1{background:rgba(59,130,246,.28)!important}
 .lgnd{display:flex;gap:12px;padding:5px 11px;background:var(--card2);border-top:1px solid var(--border);flex-shrink:0;font-size:10px;color:var(--muted)}
 .ldot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px}
 /* STRIP */
-.strip{display:flex;border-top:1px solid var(--border);background:var(--card);flex-shrink:0;overflow-x:auto}
+.strip{display:flex;border-top:1px solid var(--border);background:var(--card);flex-shrink:0;overflow-x:auto;padding-bottom:max(env(safe-area-inset-bottom),12px)}
 .strip::-webkit-scrollbar{display:none}
 .sc{flex:1;min-width:70px;padding:7px 4px;text-align:center;border-right:1px solid var(--border);flex-shrink:0}
 .sc:last-child{border-right:none}
@@ -181,6 +181,83 @@ tr.sel-row>td.ccell{outline:2px solid rgba(59,130,246,.7);outline-offset:-2px}
 .ccell{position:relative;cursor:context-menu}.ccell.c1{background:rgba(239,68,68,.25)}.ccell.c2{background:rgba(249,115,22,.25)}.ccell.c3{background:rgba(234,179,8,.25)}.ccell.c4{background:rgba(34,197,94,.25)}.ccell.c5{background:rgba(6,182,212,.25)}.ccell.c6{background:rgba(59,130,246,.25)}.ccell.c7{background:rgba(139,92,246,.25)}.ccell.c8{background:rgba(236,72,153,.25)}.ccell.c9{background:rgba(255,255,255,.15)}.ccell.c10{background:rgba(148,163,184,.2)}.ccell.c11{background:rgba(161,98,7,.25)}.ccell.c12{background:rgba(19,78,74,.3)}.ccell.c13{background:rgba(23,37,84,.3)}.ccell.c14{background:rgba(74,25,66,.3)}
 .cpal{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:950;padding:8px;display:flex;gap:5px;flex-wrap:wrap;width:168px}
 .cpal-dot{width:22px;height:22px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:.15s}.cpal-dot:hover{border-color:var(--text);transform:scale(1.15)}
+.cpal-ph{display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
+.phdot{cursor:pointer;font-size:10px;margin-left:3px;vertical-align:middle;opacity:.9}.phdot:hover{opacity:1}
+.phov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}
+.phov img{max-width:96vw;max-height:84vh;border-radius:8px;object-fit:contain;box-shadow:var(--shadow)}
+.phov-bar{display:flex;gap:8px;margin-bottom:10px}
+.cap-balance{font-size:30px;font-weight:800;text-align:center;margin:6px 0 4px}
+.cap-sub{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px}
+.cap-form{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.cap-btns{display:flex;gap:8px}.cap-btns .btn{flex:1}
+.cap-hist-btn{width:100%;margin-top:10px;padding:9px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
+.cap-hist-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cap-hist{margin-top:8px}
+.cap-row{display:flex;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid var(--border)}
+.cap-ic{font-size:13px;flex-shrink:0}
+.cap-amt{font-weight:700;font-size:14px;flex-shrink:0;min-width:90px}
+.cap-meta{display:flex;flex-direction:column;flex:1;min-width:0}
+.cap-time{font-size:11px;color:var(--muted)}
+.cap-note{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cap-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:15px;flex-shrink:0;padding:2px 6px}
+.cap-del:hover{color:var(--red)}
+.cap-empty{text-align:center;color:var(--muted);padding:18px;font-size:13px}
+/* CAPITAL BAR (над загальною статистикою) */
+.cap-bar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:9px 12px;margin-bottom:10px}
+.cap-bar-lbl{font-size:13px;font-weight:700;color:var(--text)}
+.cap-bar-sum{font-size:17px;font-weight:800;margin-right:auto}
+.cap-pm{width:32px;height:32px;border-radius:8px;border:none;color:#fff;font-size:20px;font-weight:800;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cap-plus{background:var(--green)}.cap-minus{background:var(--red)}.cap-pm:active{transform:scale(.92)}
+.cap-hist-ic{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:transparent;font-size:15px;cursor:pointer;flex-shrink:0}
+.cap-hist-ic:hover{border-color:var(--accent)}
+/* CAPITAL MODALS */
+.cmodal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1100;display:flex;align-items:center;justify-content:center;padding:16px}
+.cmodal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);width:min(380px,94vw);padding:20px;display:flex;flex-direction:column;gap:8px}
+.cmodal-box h3{font-size:17px;font-weight:700;margin-bottom:4px}
+.cmodal-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.cmodal-acts{display:flex;gap:8px;margin-top:14px}.cmodal-acts .btn{flex:1;padding:11px}
+.cmodal-hist{max-height:80vh}
+.cmodal-hhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.cmodal-hhead h3{margin:0}
+.cmodal-list{overflow-y:auto;max-height:52vh;margin-top:4px}
+/* NOTES */
+.tg-bar{display:flex;gap:6px;overflow-x:auto;padding:8px 2px;margin-bottom:8px;scrollbar-width:none}
+.tg-bar::-webkit-scrollbar{display:none}
+.tg-chip{flex-shrink:0;padding:7px 12px;border-radius:99px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tg-chip:hover{border-color:var(--accent);color:var(--accent)}
+.notes-top{display:flex;align-items:center;margin-bottom:8px}
+.notes-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:var(--radius)}
+.notes-tbl{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}
+.notes-tbl th{background:var(--card2);color:var(--muted);font-weight:700;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);position:sticky;top:0}
+.notes-tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text);text-align:left;vertical-align:middle}
+.tg-ov-tbl th,.tg-ov-tbl td{text-align:left}
+.notes-tbl tbody tr{cursor:pointer}.notes-tbl tbody tr:hover{background:var(--card2)}
+.nt-dt{color:var(--muted);font-size:11px}
+.nt-tg{font-weight:700;color:var(--accent)}
+.nt-cas{padding:2px 8px;border-radius:6px;background:rgba(59,130,246,.15);color:var(--accent);font-weight:600}
+.nt-mut{color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis}
+.nt-crea-c{color:var(--accent);font-weight:600}
+.nt-status{padding:2px 9px;border-radius:99px;border:1px solid;font-size:11px;font-weight:700}
+.nt-amt{color:var(--green);font-weight:800}
+.nt-copy{cursor:pointer;opacity:.8}.nt-copy:hover{opacity:1}
+.nt-status-btn{cursor:pointer;user-select:none}.nt-status-btn:hover{filter:brightness(1.2)}
+.ns-menu{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:1200;padding:5px;min-width:160px}
+.ns-item{padding:10px 12px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer}
+.ns-item:hover{background:var(--card2)}
+.nf-link-row{display:flex;gap:6px}.nf-link-row .inp{flex:1}.nf-link-row .btn{flex-shrink:0}
+.tg-ov-tbl{white-space:normal}
+.note-form{max-height:88vh;overflow-y:auto}
+.nf-ts{font-size:12px;color:var(--muted);margin-bottom:4px}
+.frow2{display:flex;gap:8px}.frow2>div{flex:1;display:flex;flex-direction:column}
+.nf-crea{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0}
+.nf-thumb{position:relative;width:54px;height:54px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.nf-thumb img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.nf-thumb-x{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.65);color:#fff;font-size:10px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ngal img{max-height:68vh}
+.ng-count{color:#fff;font-size:14px;font-weight:700;align-self:center;min-width:42px;text-align:center}
+.ng-thumbs{display:flex;gap:6px;margin-top:10px;overflow-x:auto;max-width:96vw;padding:4px}
+.ng-thumbs img{width:50px;height:50px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:.5;border:2px solid transparent;flex-shrink:0}
+.ng-thumbs img.on{opacity:1;border-color:var(--accent)}
 /* PERIOD FILTER */
 .sp-bar{display:flex;gap:5px;padding:8px 10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border);background:rgba(59,130,246,.06);flex-shrink:0}
 .sp-lbl{font-size:11px;color:var(--muted);white-space:nowrap}
@@ -410,7 +487,7 @@ td.s1::after,.og-drop-td::after{content:'';position:absolute;right:0;top:0;width
 
 <script>
 'use strict';
-const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null,clipboard:[],statsPeriod:null};
+const G={role:null,selRole:'admin',svc:null,stab:'casino',editId:null,usdRate:41,sel:new Set(),sf:null,clipboard:[],statsPeriod:null,capHistOpen:false};
 
 // ── SUPABASE DB ──
 const _SB_URL='https://iojrkwpdomtcizsbyhio.supabase.co';
@@ -522,7 +599,12 @@ function getDaysInRange(dr,entries){
   return Math.max(0,d);
 }
 function entryDeposits(e){
-  return[e.ftd,...(e.deposits||[])].filter(d=>d!==null&&d!==undefined&&d!=='').reduce((s,d)=>s+(parseFloat(d)||0),0);
+  // Лише додатні значення = реальні депозити. Відʼємні (вкрадено) рахуються окремо.
+  return[e.ftd,...(e.deposits||[])].filter(d=>d!==null&&d!==undefined&&d!=='').reduce((s,d)=>{const n=parseFloat(d)||0;return s+(n>0?n:0);},0);
+}
+// Відʼємне значення у клітинці (напр. -200) = гроші забрали ("вкрадено"). Абсолютна сума йде у витрати.
+function entryStolen(e){
+  return[e.ftd,...(e.deposits||[])].filter(d=>d!==null&&d!==undefined&&d!=='').reduce((s,d)=>{const n=parseFloat(d)||0;return s+(n<0?-n:0);},0);
 }
 function entryPersonnelCost(e,rates,dvOv){
   if(e.status==='False'||e.status==='Waiting'||!e.status)return 0;
@@ -537,7 +619,7 @@ function entryPersonnelCost(e,rates,dvOv){
   if(dvOv[dvKey]&&dvOv[dvKey][e.service]!==undefined)return dvOv[dvKey][e.service];
   return rates[e.service]!==undefined?rates[e.service]:(rates._dv??400);
 }
-function entryExpenses(e,rates,dvOv){return entryPersonnelCost(e,rates,dvOv)+entryDeposits(e);}
+function entryExpenses(e,rates,dvOv){return entryPersonnelCost(e,rates,dvOv)+entryDeposits(e)+entryStolen(e);}
 
 // Proportional ad/sub cost for a set of entries given their date ranges
 function proportionalMonthly(monthlyAmt, days){return(parseFloat(monthlyAmt)||0)/30*days;}
@@ -716,9 +798,11 @@ async function renderSvc(){
       const dk=(e.drop||'').toLowerCase().trim(),cls=bl.includes(dk)?'blk':dc[dk]>1?'dup':'';
       const deps=e.deposits||[];
       const cc=e.cellColors||{};
+      const cp=e.cellPhotos||{};
+      const _ph=(f)=>cp[f]?`<span class="phdot" onclick="event.stopPropagation();viewPhoto(${e.id},'${f}')">📷</span>`:'';
       const dc2=[0,1,2,3,4,5,6].map(i=>{const v=deps[i],cl=cc['d'+i]?'ccell '+cc['d'+i]:'ccell';
-        if(v===undefined||v===null||v==='')return`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">—</td>`;
-        return`<td class="${cl}" data-eid="${e.id}" data-fld="d${i}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'d${i}',${v},this)}" style="color:${v==0?'var(--border)':'var(--text)'}">${v}</td>`;}).join('');
+        if(v===undefined||v===null||v==='')return`<td class="${cl}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" style="color:var(--border)">${cp['d'+i]?_ph('d'+i):'—'}</td>`;
+        return`<td class="${cl}" data-eid="${e.id}" data-fld="d${i}" oncontextmenu="cellCtx(event,${e.id},'d${i}')" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'d${i}',${v},this)}" style="color:${v<0?'var(--red)':v==0?'var(--border)':'var(--text)'}">${v}${_ph('d'+i)}</td>`;}).join('');
       const exp=G.role==='admin'?`<td style="color:var(--muted);font-size:11px">₴${fmt(entryExpenses(e,rates,dvOv))}</td>`:'';
       const _ftdV=(e.ftd!==null&&e.ftd!==undefined&&e.ftd!=='');
       const selCls=G.sel.has(e.id)?' sel-row':'';const idDup=!!(e.accountId&&iac[e.accountId.trim()]>1);return`<tr class="${cls}${selCls}" oncontextmenu="eCtx(event,${e.id})" onclick="rowClick(event,${e.id})">
@@ -727,7 +811,7 @@ async function renderSvc(){
         <td class="cpnick" onclick="cpNick(event,'${e.dropovod||''}')" style="font-size:11px;color:var(--muted)">${e.dropovod||'—'}</td>
         <td class="s1 cpnick" onclick="cpNick(event,'${e.drop||''}')">${e.drop||'—'}</td>
         <td style="font-size:10px" data-dup="${idDup?1:0}">${e.accountId||'—'}</td>
-        <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" ${_ftdV?`data-eid="${e.id}" data-fld="ftd" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'ftd',${e.ftd},this)}"`:''}oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}</td>${dc2}
+        <td class="${cc.ftd?'ccell '+cc.ftd:'ccell'}" ${_ftdV?`data-eid="${e.id}" data-fld="ftd" onclick="if(event.altKey){event.stopPropagation();calcToggle(${e.id},'ftd',${e.ftd},this)}"`:''}oncontextmenu="cellCtx(event,${e.id},'ftd')">${fdep(e.ftd)}${_ph('ftd')}</td>${dc2}
         <td><span class="sp ${e.status||'Waiting'}">${e.status||'Waiting'}</span></td>${exp}${noteCell(e)}</tr>`;
     }).join(''):emptyRow(18);
   }
@@ -743,10 +827,12 @@ async function renderStrip(entries,svc,rates,dvOv){
   let extra='';
   if(G.role==='admin'){
     const totalExp=entries.reduce((s,e)=>s+entryExpenses(e,rates,dvOv),0);
+    const totalStolen=entries.reduce((s,e)=>s+entryStolen(e),0);
     const cr=await cfg('casinoRates')||{},rateUSD=cr[svc]||0,rev=ap.length*rateUSD*G.usdRate,net=rev-totalExp;
     extra=`<div class="sc"><span class="sv b">₴${fmt(totalDep)}</span><span class="sl">Депозити</span></div>
       <div class="sc"><span class="sv b">₴${fmt(avgDep)}</span><span class="sl">Сер.депозит</span></div>
       <div class="sc"><span class="sv">₴${fmt(totalExp)}</span><span class="sl">Витрати</span></div>
+      ${totalStolen>0?`<div class="sc"><span class="sv r">₴${fmt(totalStolen)}</span><span class="sl">🩸 Вкрадено</span></div>`:''}
       ${rateUSD>0?`<div class="sc"><span class="sv g">₴${fmt(rev)}</span><span class="sl">Дохід</span></div>
       <div class="sc"><span class="sv ${net>=0?'g':'r'}">₴${fmt(net)}</span><span class="sl">Прибуток</span></div>`:''}`;
   } else {
@@ -853,6 +939,228 @@ async function ogCtx(e,dvK,drK,svc){
 
 // ── STATS ──
 function setStTab(t){G.stab=t;renderStats();}
+// ── КАПІТАЛ (ручний облік) ──
+function _capFmtTs(ts){try{const d=new Date(ts);return d.toLocaleDateString('uk-UA')+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}catch(e){return ts||'';}}
+function _capEsc(t){return(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// Вікно вводу доходу/витрати
+function capModal(type){
+  const isIn=type==='in';
+  const ov=document.createElement('div');ov.className='cmodal';
+  ov.innerHTML=`<div class="cmodal-box">
+    <h3 style="color:${isIn?'var(--green)':'var(--red)'}">${isIn?'➕ Додати дохід':'➖ Додати витрату'}</h3>
+    <label class="cmodal-lbl">Сума $</label>
+    <input id="cm-amt" class="inp" type="number" inputmode="numeric" step="1" placeholder="0">
+    <label class="cmodal-lbl">Нотатка (опційно)</label>
+    <input id="cm-note" class="inp" placeholder="Коментар...">
+    <div class="cmodal-acts">
+      <button class="btn" id="cm-save" style="background:${isIn?'var(--green)':'var(--red)'}">Зберегти</button>
+      <button class="btn ghost" id="cm-cancel">Скасувати</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  const amt=ov.querySelector('#cm-amt');setTimeout(()=>amt.focus(),60);
+  const close=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)close();};
+  ov.querySelector('#cm-cancel').onclick=close;
+  const save=async()=>{
+    const v=Math.abs(parseFloat(amt.value)||0);
+    if(!v){showToast('❌ Введіть суму');return;}
+    const note=(ov.querySelector('#cm-note').value||'').trim();
+    const log=(await cfg('capitalLog'))||[];
+    log.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:new Date().toISOString(),type,amount:v,note});
+    await setCfg('capitalLog',log);
+    close();renderStats();showToast(isIn?'➕ Дохід додано':'➖ Витрату додано');
+  };
+  ov.querySelector('#cm-save').onclick=save;
+  amt.addEventListener('keydown',e=>{if(e.key==='Enter')save();});
+}
+// Вікно історії капіталу
+async function capHistModal(){
+  const log=(await cfg('capitalLog'))||[];
+  const totalIn=log.filter(x=>x.type==='in').reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+  const totalOut=log.filter(x=>x.type==='out').reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+  const cap=totalIn-totalOut;
+  const sorted=[...log].sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  const rows=sorted.map(x=>{const isIn=x.type==='in';return `<div class="cap-row">
+      <span class="cap-amt" style="color:${isIn?'var(--green)':'var(--red)'}">${isIn?'+':'−'}$${fmt(x.amount)}</span>
+      <span class="cap-meta"><span class="cap-time">${_capFmtTs(x.ts)}</span>${x.note?`<span class="cap-note">📝 ${_capEsc(x.note)}</span>`:''}</span>
+      <button class="cap-del" onclick="capDel('${x.id}')">🗑</button>
+    </div>`;}).join('')||`<div class="cap-empty">Записів ще немає</div>`;
+  const ov=document.createElement('div');ov.className='cmodal';
+  ov.innerHTML=`<div class="cmodal-box cmodal-hist">
+    <div class="cmodal-hhead"><h3>🕘 Історія капіталу</h3><button class="btn ghost sm" id="ch-close">✕</button></div>
+    <div class="cap-balance" style="color:${cap>=0?'var(--green)':'var(--red)'}">$${fmt(cap)}</div>
+    <div class="cap-sub"><span style="color:var(--green)">↑ Доходи: $${fmt(totalIn)}</span><span style="color:var(--red)">↓ Витрати: $${fmt(totalOut)}</span></div>
+    <hr class="t">
+    <div class="cmodal-list">${rows}</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)close();};
+  ov.querySelector('#ch-close').onclick=close;
+}
+async function capDel(id){
+  if(!confirm('Видалити запис?'))return;
+  const log=(await cfg('capitalLog'))||[];
+  await setCfg('capitalLog',log.filter(x=>x.id!==id));
+  document.querySelectorAll('.cmodal').forEach(m=>m.remove());
+  renderStats();capHistModal();showToast('🗑 Видалено');
+}
+
+// ── НОТАТКИ ──
+function _attrEsc(t){return(t||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function noteViewImg(src){
+  const ov=document.createElement('div');ov.className='phov';
+  ov.innerHTML=`<div class="phov-bar"><button class="btn ghost sm" id="nvx">✕ Закрити</button></div><img src="${src}" alt="креатив">`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('#nvx').onclick=close;
+  ov.onclick=e=>{if(e.target===ov)close();};
+}
+// Галерея креативів нотатки — відкривається одразу з таблиці
+async function noteGallery(id){
+  const log=(await cfg('notesLog'))||[];
+  const n=log.find(x=>x.id===id);
+  const imgs=(n&&n.creatives)||[];
+  if(!imgs.length){showToast('Немає фото');return;}
+  let idx=0;
+  const ov=document.createElement('div');ov.className='phov ngal';
+  const close=()=>ov.remove();
+  function render(){
+    ov.innerHTML=`<div class="phov-bar">
+        ${imgs.length>1?`<button class="btn ghost sm" id="ng-prev">‹</button><span class="ng-count">${idx+1}/${imgs.length}</span><button class="btn ghost sm" id="ng-next">›</button>`:''}
+        <button class="btn ghost sm" id="ng-x">✕ Закрити</button>
+      </div>
+      <img src="${imgs[idx]}" alt="креатив">
+      ${imgs.length>1?`<div class="ng-thumbs">${imgs.map((d,i)=>`<img src="${d}" class="${i===idx?'on':''}" data-i="${i}">`).join('')}</div>`:''}`;
+    ov.querySelector('#ng-x').onclick=close;
+    const pv=ov.querySelector('#ng-prev'),nx=ov.querySelector('#ng-next');
+    if(pv)pv.onclick=()=>{idx=(idx-1+imgs.length)%imgs.length;render();};
+    if(nx)nx.onclick=()=>{idx=(idx+1)%imgs.length;render();};
+    ov.querySelectorAll('.ng-thumbs img').forEach(t=>t.onclick=()=>{idx=+t.dataset.i;render();});
+  }
+  ov.onclick=e=>{if(e.target===ov)close();};
+  document.body.appendChild(ov);
+  render();
+}
+async function openNoteForm(id){
+  const services=(await cfg('services'))||[];
+  const log=(await cfg('notesLog'))||[];
+  const n=id?(log.find(x=>x.id===id)||{}):{};
+  const isNew=!id;
+  const statusOpts=['домовляємось','заливаємо','чекаємо виплату'];
+  const svcOpts=services.map(s=>`<option value="${_attrEsc(s)}" ${n.casino===s?'selected':''}>${_capEsc(s)}</option>`).join('');
+  const stOpts=statusOpts.map(s=>`<option value="${s}" ${n.status===s?'selected':''}>${s}</option>`).join('');
+  let crea=[...(n.creatives||[])];
+  const ov=document.createElement('div');ov.className='cmodal';
+  ov.innerHTML=`<div class="cmodal-box note-form">
+    <div class="cmodal-hhead"><h3>${isNew?'➕ Нова нотатка':'✏️ Нотатка'}</h3><button class="btn ghost sm" id="nf-x">✕</button></div>
+    <div class="nf-ts">📅 ${isNew?'Зараз (авто)':_capFmtTs(n.ts)}</div>
+    <label class="cmodal-lbl">ТГ</label><input id="nf-tg" class="inp" placeholder="@username" value="${_attrEsc(n.tg)}">
+    <label class="cmodal-lbl">Казино</label><select id="nf-casino" class="inp"><option value="">— оберіть —</option>${svcOpts}</select>
+    <div class="frow2"><div><label class="cmodal-lbl">Емейл</label><input id="nf-email" class="inp" value="${_attrEsc(n.email)}"></div>
+      <div><label class="cmodal-lbl">Пароль</label><input id="nf-pwd" class="inp" value="${_attrEsc(n.password)}"></div></div>
+    <label class="cmodal-lbl">Силка</label><div class="nf-link-row"><input id="nf-link" class="inp" placeholder="https://..." value="${_attrEsc(n.link)}"><button type="button" class="btn ghost sm" id="nf-link-copy" title="Копіювати">📋</button></div>
+    <label class="cmodal-lbl">Канали</label><input id="nf-channels" class="inp" value="${_attrEsc(n.channels)}">
+    <label class="cmodal-lbl">Креативи (фото)</label>
+    <div id="nf-crea" class="nf-crea"></div>
+    <button class="btn ghost sm" id="nf-addphoto" style="align-self:flex-start">📷 Додати фото</button>
+    <div class="frow2"><div><label class="cmodal-lbl">Статус</label><select id="nf-status" class="inp">${stOpts}</select></div>
+      <div><label class="cmodal-lbl">Сума до виплати $</label><input id="nf-amount" class="inp" type="number" inputmode="numeric" step="1" value="${n.amount||''}"></div></div>
+    <div class="cmodal-acts">
+      <button class="btn" id="nf-save">Зберегти</button>
+      ${isNew?'':'<button class="btn red" id="nf-del">🗑</button>'}
+      <button class="btn ghost" id="nf-cancel">Скасувати</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  function renderCrea(){
+    const c=ov.querySelector('#nf-crea');
+    if(!crea.length){c.innerHTML='<span style="color:var(--muted);font-size:12px">немає фото</span>';return;}
+    c.innerHTML=crea.map((d,i)=>`<div class="nf-thumb"><img src="${d}" data-i="${i}"><span class="nf-thumb-x" data-i="${i}">✕</span></div>`).join('');
+    c.querySelectorAll('img').forEach(img=>img.onclick=()=>noteViewImg(crea[+img.dataset.i]));
+    c.querySelectorAll('.nf-thumb-x').forEach(el=>el.onclick=()=>{crea.splice(+el.dataset.i,1);renderCrea();});
+  }
+  renderCrea();
+  ov.querySelector('#nf-addphoto').onclick=()=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
+    inp.onchange=async()=>{const f=inp.files&&inp.files[0];if(!f)return;try{showToast('⏳ Фото...');const data=await _compressImg(f);crea.push(data);renderCrea();}catch(x){showToast('❌ Фото');}};
+    inp.click();
+  };
+  const close=()=>ov.remove();
+  ov.querySelector('#nf-x').onclick=close;ov.querySelector('#nf-cancel').onclick=close;
+  ov.onclick=e=>{if(e.target===ov)close();};
+  ov.querySelector('#nf-link-copy').onclick=()=>{const v=(ov.querySelector('#nf-link').value||'').trim();if(v)cpText(encodeURIComponent(v));else showToast('Порожньо');};
+  if(!isNew)ov.querySelector('#nf-del').onclick=async()=>{
+    if(!confirm('Видалити нотатку?'))return;
+    const l=(await cfg('notesLog'))||[];
+    await setCfg('notesLog',l.filter(x=>x.id!==id));
+    close();renderStats();showToast('🗑 Видалено');
+  };
+  ov.querySelector('#nf-save').onclick=async()=>{
+    const l=(await cfg('notesLog'))||[];
+    const obj={
+      id:id||(Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
+      ts:n.ts||new Date().toISOString(),
+      tg:ov.querySelector('#nf-tg').value.trim(),
+      casino:ov.querySelector('#nf-casino').value,
+      email:ov.querySelector('#nf-email').value.trim(),
+      password:ov.querySelector('#nf-pwd').value.trim(),
+      link:ov.querySelector('#nf-link').value.trim(),
+      channels:ov.querySelector('#nf-channels').value.trim(),
+      creatives:crea,
+      status:ov.querySelector('#nf-status').value,
+      amount:Math.abs(parseFloat(ov.querySelector('#nf-amount').value)||0)
+    };
+    if(id){const i=l.findIndex(x=>x.id===id);if(i>=0)l[i]=obj;else l.push(obj);}else l.push(obj);
+    await setCfg('notesLog',l);
+    close();renderStats();showToast('✅ Збережено');
+  };
+}
+// Швидкий вибір статусу по лівому кліку в таблиці
+let _nsMenu=null;
+async function noteStatusMenu(ev,id){
+  ev.stopPropagation();ev.preventDefault();
+  if(_nsMenu){_nsMenu.remove();_nsMenu=null;}
+  const opts=[['домовляємось','var(--yellow)'],['заливаємо','var(--accent)'],['чекаємо виплату','#f97316']];
+  const m=document.createElement('div');m.className='ns-menu';_nsMenu=m;
+  m.innerHTML=opts.map(([s,c])=>`<div class="ns-item" data-s="${s}" style="color:${c}">${s}</div>`).join('');
+  document.body.appendChild(m);
+  const pz=parseFloat(getComputedStyle(document.documentElement).zoom)||1;
+  m.style.left=Math.min(ev.clientX/pz,(window.innerWidth/pz)-180)+'px';
+  m.style.top=Math.min(ev.clientY/pz,(window.innerHeight/pz)-130)+'px';
+  m.querySelectorAll('.ns-item').forEach(el=>el.onclick=async(e)=>{
+    e.stopPropagation();
+    const s=el.dataset.s;
+    const log=(await cfg('notesLog'))||[];
+    const i=log.findIndex(x=>x.id===id);
+    if(i>=0){log[i].status=s;await setCfg('notesLog',log);}
+    m.remove();_nsMenu=null;renderStats();showToast('✅ Статус: '+s);
+  });
+}
+document.addEventListener('click',e=>{if(_nsMenu&&!_nsMenu.contains(e.target)){_nsMenu.remove();_nsMenu=null;}},true);
+async function openTgOverview(tgEnc){
+  const tg=decodeURIComponent(tgEnc);
+  const log=(await cfg('notesLog'))||[];
+  const items=log.filter(n=>(n.tg||'').trim()===tg).sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+  const stCol=(s)=>({'домовляємось':'var(--yellow)','заливаємо':'var(--accent)','чекаємо виплату':'#f97316'}[s]||'var(--muted)');
+  const rows=items.map(n=>`<tr onclick="document.querySelectorAll('.cmodal').forEach(m=>m.remove());openNoteForm('${n.id}')">
+      <td>${n.casino?_capEsc(n.casino):'—'}</td>
+      <td><span class="nt-status" style="color:${stCol(n.status)};border-color:${stCol(n.status)}">${_capEsc(n.status)||'—'}</span></td>
+      <td class="nt-amt">${n.amount?'$'+fmt(n.amount):'—'}</td>
+    </tr>`).join('')||`<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:14px">Немає</td></tr>`;
+  const ov=document.createElement('div');ov.className='cmodal';
+  ov.innerHTML=`<div class="cmodal-box cmodal-hist">
+    <div class="cmodal-hhead"><h3>📡 ${_capEsc(tg)}</h3><button class="btn ghost sm" id="to-x">✕</button></div>
+    <div class="cmodal-list"><table class="notes-tbl tg-ov-tbl">
+      <thead><tr><th>Казино</th><th>Статус</th><th>Сума $</th></tr></thead><tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('#to-x').onclick=close;
+  ov.onclick=e=>{if(e.target===ov)close();};
+}
 function setStatsPeriod(type){
   const now=new Date();
   const todayKyiv=now.toLocaleDateString('en-CA',{timeZone:'Europe/Kiev'}); // YYYY-MM-DD за Києвом
@@ -899,7 +1207,8 @@ async function renderStats(){
   if(G.role==='admin'){
     tabsEl.innerHTML=`
       <div class="stab ${G.stab==='casino'?'on':''}" onclick="setStTab('casino')">🎰 По казино</div>
-      <div class="stab ${G.stab==='dv'?'on':''}" onclick="setStTab('dv')">👥 По дроповодах</div>`;
+      <div class="stab ${G.stab==='dv'?'on':''}" onclick="setStTab('dv')">👥 По дроповодах</div>
+      <div class="stab ${G.stab==='notes'?'on':''}" onclick="setStTab('notes')">📝 Нотатки</div>`;
   } else {
     G.stab='dv';
     tabsEl.innerHTML=`<div class="stab on">👥 По дроповодах</div>`;
@@ -944,16 +1253,17 @@ async function renderStats(){
       // Track global min/max entry dates (for period-filter mode)
       en.forEach(e=>{const d=(e.date||'').slice(0,10);if(d){if(!gMinDate||d<gMinDate)gMinDate=d;if(d>gMaxDate)gMaxDate=d;}});
       const ap=en.filter(e=>e.status==='Approved'),wt=en.filter(e=>e.status==='Waiting'),fl=en.filter(e=>e.status==='False');
-      let dvCosts=0,dropCosts=0,deposits=0;
+      let dvCosts=0,dropCosts=0,deposits=0,stolen=0;
       en.forEach(e=>{
         deposits+=entryDeposits(e);
+        stolen+=entryStolen(e);
         if(e.status!=='False'){
           const hasDv=!!(e.dropovod&&e.dropovod.trim());
           if(hasDv)dvCosts+=entryPersonnelCost(e,rates,dvOv);
           else dropCosts+=entryPersonnelCost(e,rates,dvOv);
         }
       });
-      const totalPersonnel=dvCosts+dropCosts,totalExp=totalPersonnel+deposits;
+      const totalPersonnel=dvCosts+dropCosts,totalExp=totalPersonnel+deposits+stolen;
       const rateUSD=cr[svc]||0,revenue=ap.length*rateUSD*G.usdRate;
       const adProp=proportionalMonthly(adM,days),subProp=proportionalMonthly(subM,days);
       // Load adjustments
@@ -972,7 +1282,7 @@ async function renderStats(){
       const adjTotal=adjVoidRev+adjExpense;
       const net=revenue-totalExp-adjTotal;
       const target=ct[svc]||0,remaining=Math.max(0,target-ap.length);
-      svcData[svc]={ap:ap.length,wt:wt.length,fl:fl.length,dvCosts,dropCosts,deposits,totalExp,rateUSD,revenue,adProp,subProp,net,target,remaining,days,en,adjs,adjVoidRev,adjExpense,adjTotal};
+      svcData[svc]={ap:ap.length,wt:wt.length,fl:fl.length,dvCosts,dropCosts,deposits,stolen,totalExp,rateUSD,revenue,adProp,subProp,net,target,remaining,days,en,adjs,adjVoidRev,adjExpense,adjTotal};
       gRevenue+=revenue;gTotalExp+=totalExp;gAdjTotal+=adjTotal;
     }
 
@@ -981,7 +1291,16 @@ async function renderStats(){
     const gAdProp=proportionalMonthly(adM,globalDays),gSubProp=proportionalMonthly(subM,globalDays);
     const gNet=gRevenue-gTotalExp-gAdjTotal-gAdProp-gSubProp;
 
-    let html=spBar+`<div class="gcard">
+    const _capLog=(await cfg('capitalLog'))||[];
+    const _capSum=_capLog.reduce((s,x)=>s+((x.type==='in'?1:-1)*(parseFloat(x.amount)||0)),0);
+    const capBar=`<div class="cap-bar">
+      <span class="cap-bar-lbl">💰 Капітал</span>
+      <span class="cap-bar-sum" style="color:${_capSum>=0?'var(--green)':'var(--red)'}">$${fmt(_capSum)}</span>
+      <button class="cap-pm cap-plus" onclick="capModal('in')" title="Додати дохід">＋</button>
+      <button class="cap-pm cap-minus" onclick="capModal('out')" title="Додати витрату">－</button>
+      <button class="cap-hist-ic" onclick="capHistModal()" title="Історія">🕘</button>
+    </div>`;
+    let html=spBar+capBar+`<div class="gcard">
       <h3>🌐 Загальна статистика <span style="font-size:10px;font-weight:400;color:var(--muted);margin-left:6px">курс: $1 = ₴${G.usdRate.toFixed(2)}</span></h3>
       <div class="sr"><span class="lb">💵 Дохід (Approved × ставки)</span><span class="vl" style="color:var(--green)">${fmtBoth(gRevenue)}</span></div>
       <div class="sr"><span class="lb">💸 Операційні витрати</span><span class="vl">${fmtBoth(gTotalExp)}</span></div>
@@ -1032,6 +1351,7 @@ async function renderStats(){
             <div class="er"><span class="el">👥 Витрати на дроповодів</span><span>${fmtBoth(s.dvCosts)}</span></div>
             <div class="er"><span class="el">👤 Виплати дропам</span><span>${fmtBoth(s.dropCosts)}</span></div>
             <div class="er"><span class="el">🎰 Депозити (всі записи)</span><span>${fmtBoth(s.deposits)}</span></div>
+            ${s.stolen>0?`<div class="er"><span class="el" style="color:var(--red)">🩸 Вкрадено</span><span style="color:var(--red)">${fmtBoth(s.stolen)}</span></div>`:''}
             <div class="er" style="font-weight:700;color:var(--text)"><span class="el" style="color:var(--text)">Разом витрати</span><span>${fmtBoth(s.totalExp)}</span></div>
           </div>
           <div class="sr">
@@ -1055,6 +1375,36 @@ async function renderStats(){
       </div>`;
     }
     body.innerHTML=html;
+  } else if(G.stab==='notes'&&G.role==='admin'){
+    // ── Нотатки ──
+    const log=(await cfg('notesLog'))||[];
+    const sorted=[...log].sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+    // TG-рядок: унікальні ТГ, останні записані — першими
+    const tgSeen=new Set(),tgOrder=[];
+    sorted.forEach(n=>{const t=(n.tg||'').trim();if(t&&!tgSeen.has(t)){tgSeen.add(t);tgOrder.push(t);}});
+    const tgBar=tgOrder.length?`<div class="tg-bar">${tgOrder.map(t=>`<button class="tg-chip" onclick="openTgOverview('${encodeURIComponent(t)}')">${_capEsc(t)}</button>`).join('')}</div>`:'';
+    const stCol=(s)=>({'домовляємось':'var(--yellow)','заливаємо':'var(--accent)','чекаємо виплату':'#f97316'}[s]||'var(--muted)');
+    const rowsHtml=sorted.map(n=>{
+      const crea=(n.creatives||[]).length;
+      return `<tr onclick="openNoteForm('${n.id}')">
+        <td class="nt-dt">${_capFmtTs(n.ts)}</td>
+        <td class="nt-tg">${_capEsc(n.tg)||'—'}</td>
+        <td>${n.casino?`<span class="nt-cas">${_capEsc(n.casino)}</span>`:'—'}</td>
+        <td class="nt-mut">${_capEsc(n.email)||'—'}</td>
+        <td class="nt-mut">${_capEsc(n.password)||'—'}</td>
+        <td>${n.link?`<a href="${_attrEsc(n.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔗</a> <span class="nt-copy" title="Копіювати силку" onclick="event.stopPropagation();cpText('${encodeURIComponent(n.link)}')">📋</span>`:'—'}</td>
+        <td class="nt-mut">${_capEsc(n.channels)||'—'}</td>
+        <td>${crea?`<span class="nt-crea-c" onclick="event.stopPropagation();noteGallery('${n.id}')">📷 ${crea}</span>`:'—'}</td>
+        <td><span class="nt-status nt-status-btn" style="color:${stCol(n.status)};border-color:${stCol(n.status)}" onclick="event.stopPropagation();noteStatusMenu(event,'${n.id}')">${_capEsc(n.status)||'обрати'} ▾</span></td>
+        <td class="nt-amt">${n.amount?'$'+fmt(n.amount):'—'}</td>
+      </tr>`;
+    }).join('')||`<tr><td colspan="10"><div class="empty"><div class="eic">📭</div>Нотаток ще немає</div></td></tr>`;
+    body.innerHTML=`${tgBar}
+      <div class="notes-top"><button class="btn" onclick="openNoteForm('')">➕ Нотатка</button><span style="color:var(--muted);font-size:12px;margin-left:8px">${log.length} записів</span></div>
+      <div class="notes-wrap"><table class="notes-tbl">
+        <thead><tr><th>Дата/Час</th><th>ТГ</th><th>Казино</th><th>Емейл</th><th>Пароль</th><th>Силка</th><th>Канали</th><th>Креативи</th><th>Статус</th><th>Сума $</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table></div>`;
   } else {
     // ── Dropovod tab ──
     const dvMap={};
@@ -1151,8 +1501,8 @@ async function openForm(id){
     body=`<div class="frow"><div class="fg"><label>Дата *</label><input id="fd" class="inp" type="date" value="${(e.date||tod).slice(0,10)}"></div><div class="fg"><label>Час</label><input id="ft" class="inp" type="time" value="${e.time||tim}"></div></div>
     <div class="frow"><div class="fg"><label>Дроповод</label><input id="fdv" class="inp" placeholder="@нік або порожньо" value="${e.dropovod||''}"></div><div class="fg"><label>Дроп *</label><input id="fdr" class="inp" placeholder="@нік" value="${e.drop||''}"></div></div>
     <div class="frow"><div class="fg"><label>ID аккаунту</label><input id="faid" class="inp" value="${e.accountId||''}"></div><div class="fg"><label>Статус</label><select id="fst">${so}</select></div></div>
-    <div class="fg" style="margin-bottom:7px"><label>Депозити</label></div>
-    <div class="dgrid">${['FTD','D1','D2','D3','D4','D5','D6','D7'].map((l,i)=>`<div class="di"><label>${l}</label><input id="fd${i}" class="inp" type="number" min="0" step="1" placeholder="—" value="${i===0?(e.ftd!==null&&e.ftd!==undefined&&e.ftd!==''?e.ftd:''):(deps[i-1]!==null&&deps[i-1]!==undefined&&deps[i-1]!==''?deps[i-1]:'')}"></div>`).join('')}</div>
+    <div class="fg" style="margin-bottom:7px"><label>Депозити <span style="font-weight:400;color:var(--muted);font-size:10px">(відʼємне значення, напр. -200 = вкрадено → у витрати)</span></label></div>
+    <div class="dgrid">${['FTD','D1','D2','D3','D4','D5','D6','D7'].map((l,i)=>`<div class="di"><label>${l}</label><input id="fd${i}" class="inp" type="number" step="1" placeholder="—" value="${i===0?(e.ftd!==null&&e.ftd!==undefined&&e.ftd!==''?e.ftd:''):(deps[i-1]!==null&&deps[i-1]!==undefined&&deps[i-1]!==''?deps[i-1]:'')}"></div>`).join('')}</div>
     <div class="fg"><label>📝 Нотатка</label><textarea id="fnote" class="inp" rows="2" placeholder="Коментар..." style="resize:vertical;min-height:52px">${e.note||''}</textarea></div>`;
   }
   body+=`<div class="factions"><button class="btn" onclick="saveEntry()">Зберегти</button><button class="btn ghost" onclick="closeM()">Скасувати</button>${id?`<button class="btn red mla" onclick="delEntry(${id})">🗑 Видалити</button>`:''}</div>`;
@@ -1190,6 +1540,7 @@ async function saveEntry(){
     const _prev=await db.get('entries',G.editId);
     obj.id=G.editId;
     if(_prev&&_prev.cellColors)obj.cellColors=_prev.cellColors; // зберегти кольори комірок
+    if(_prev&&_prev.cellPhotos)obj.cellPhotos=_prev.cellPhotos; // зберегти фото комірок
     _pushHistory({type:'put',id:G.editId,before:_prev,after:{...obj}});
     await db.put('entries',obj);
   } else {
@@ -1497,7 +1848,7 @@ async function removeBl(id){
 
 async function exportData(){
   const entries=await db.all('entries'),bl=await db.all('blacklist');
-  const settings={};for(const k of Object.keys(DEF))settings[k]=await cfg(k);
+  const settings=await cfgAll(); // усі ключі налаштувань, не лише дефолтні
   const data=JSON.stringify({entries,blacklist:bl,settings},null,2);
   const a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(data);
   a.download='leads-crm-backup.json';a.click();
@@ -1553,10 +1904,73 @@ async function cellCtx(ev,id,field){
   clr.style.background='transparent';clr.style.border='2px dashed var(--muted)';
   clr.onclick=async()=>{delete cc[field];e.cellColors=cc;await db.put('entries',e);pal.remove();_cpal=null;renderSvc();};
   pal.appendChild(clr);
+  // ── Фото на клітинку ──
+  const hasPhoto=!!(e.cellPhotos&&e.cellPhotos[field]);
+  const phBtn=document.createElement('div');
+  phBtn.className='cpal-dot cpal-ph';phBtn.style.background='#0ea5e9';phBtn.textContent='📷';
+  phBtn.title=hasPhoto?'Замінити фото':'Додати фото';
+  phBtn.onclick=()=>{pal.remove();_cpal=null;attachPhoto(id,field);};
+  pal.appendChild(phBtn);
+  if(hasPhoto){
+    const vBtn=document.createElement('div');
+    vBtn.className='cpal-dot cpal-ph';vBtn.style.background='#334155';vBtn.textContent='👁';vBtn.title='Переглянути фото';
+    vBtn.onclick=()=>{pal.remove();_cpal=null;viewPhoto(id,field);};
+    pal.appendChild(vBtn);
+  }
   const _pz=parseFloat(getComputedStyle(document.documentElement).zoom)||1;
   pal.style.left=Math.min(ev.clientX/_pz,(window.innerWidth/_pz)-150)+'px';
   pal.style.top=Math.min(ev.clientY/_pz,(window.innerHeight/_pz)-80)+'px';
   document.body.appendChild(pal);
+}
+// ── ФОТО НА КЛІТИНКУ ──
+// Стискаємо фото на клієнті, щоб не роздувати базу
+function _compressImg(file,maxDim=1280,q=0.72){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+      if(w>=h&&w>maxDim){h=Math.round(h*maxDim/w);w=maxDim;}
+      else if(h>w&&h>maxDim){w=Math.round(w*maxDim/h);h=maxDim;}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      try{res(c.toDataURL('image/jpeg',q));}catch(err){rej(err);}
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('img load'));};
+    img.src=url;
+  });
+}
+async function attachPhoto(id,field){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
+  inp.onchange=async()=>{
+    const f=inp.files&&inp.files[0];if(!f)return;
+    try{
+      showToast('⏳ Обробка фото...');
+      const data=await _compressImg(f);
+      const e=await db.get('entries',id);if(!e){showToast('❌ Запис не знайдено');return;}
+      const ph=e.cellPhotos||{};ph[field]=data;e.cellPhotos=ph;
+      await db.put('entries',e);renderSvc();showToast('📷 Фото додано');
+    }catch(x){showToast('❌ Не вдалося обробити фото');}
+  };
+  inp.click();
+}
+async function viewPhoto(id,field){
+  const e=await db.get('entries',id);
+  if(!e||!e.cellPhotos||!e.cellPhotos[field]){showToast('Немає фото');return;}
+  const ov=document.createElement('div');ov.className='phov';
+  ov.innerHTML=`<div class="phov-bar"><button class="btn red sm" id="phdel">🗑 Видалити</button><button class="btn ghost sm" id="phcls">✕ Закрити</button></div><img src="${e.cellPhotos[field]}" alt="фото">`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.querySelector('#phcls').onclick=close;
+  ov.onclick=(ev)=>{if(ev.target===ov)close();};
+  ov.querySelector('#phdel').onclick=async()=>{
+    if(!confirm('Видалити фото?'))return;
+    const e2=await db.get('entries',id);
+    if(e2&&e2.cellPhotos){delete e2.cellPhotos[field];await db.put('entries',e2);}
+    close();renderSvc();showToast('🗑 Фото видалено');
+  };
 }
 // Capture phase for palette close — same pattern as ctx menu
 document.addEventListener('click',e=>{
@@ -1694,6 +2108,15 @@ function cpNick(ev,nick){
   navigator.clipboard.writeText(nick).then(()=>showToast('📋 Скопійовано: '+nick)).catch(()=>{
     // fallback
     const ta=document.createElement('textarea');ta.value=nick;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast('📋 Скопійовано: '+nick);
+  });
+}
+// Копіювати довільний текст (силка тощо). Приймає encodeURIComponent-значення.
+function cpText(enc){
+  const t=decodeURIComponent(enc||'');
+  if(!t)return;
+  const ok=()=>showToast('📋 Скопійовано');
+  navigator.clipboard.writeText(t).then(ok).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();ok();
   });
 }
 
