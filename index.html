@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Leads CRM</title>
+<title>Harvest</title>
 <link rel="manifest" href="manifest.json">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -322,15 +322,12 @@ td.s1::after,.og-drop-td::after{content:'';position:absolute;right:0;top:0;width
 <!-- LOGIN -->
 <div id="s-login">
   <div class="lbox">
-    <h1>📊 Leads CRM</h1>
+    <h1>Harvest</h1>
     <p>Система обліку реєстрацій</p>
-    <div class="rtabs">
-      <button class="rtab on" onclick="selRole('admin')">👑 Адміністратор</button>
-      <button class="rtab" onclick="selRole('manager')">👤 Менеджер</button>
-    </div>
-    <input id="lpass" class="inp" type="password" placeholder="Пароль" onkeydown="if(event.key==='Enter')doLogin()">
+    <input id="llogin" class="inp" type="text" placeholder="Логін" autocapitalize="off" autocorrect="off" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" style="margin-bottom:10px">
+    <input id="lpass" class="inp" type="password" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn full" onclick="doLogin()">Увійти</button>
-    <div id="lerr" class="errmsg">❌ Невірний пароль</div>
+    <div id="lerr" class="errmsg">❌ Невірний логін або пароль</div>
   </div>
 </div>
 
@@ -550,7 +547,8 @@ const db={
 
 // ── DEFAULTS ──
 const DEF={
-  adminPass:'admin123',managerPass:'manager123',
+  adminPass:'admin123',managerPass:'Veizy02',
+  adminLogin:'admin',managerLogin:'Veizy02',
   services:['GGbet','First','Beton','BetKing','Gorilla','SuperGra','Paysera','Monobank'],
   svcTypes:{GGbet:'casino',First:'casino',Beton:'casino',BetKing:'casino',Gorilla:'casino',SuperGra:'casino',Paysera:'payment',Monobank:'banking'},
   expRates:{_nodv:200,_dv:400,GGbet:500},  // _nodv=no dropovod rate, _dv=default with dropovod
@@ -638,13 +636,17 @@ function selRole(r){
   document.querySelectorAll('.rtab').forEach((b,i)=>b.classList.toggle('on',(i===0&&r==='admin')||(i===1&&r==='manager')));
 }
 async function doLogin(){
+  const u=(document.getElementById('llogin').value||'').trim();
   const p=document.getElementById('lpass').value;
-  const ap=await cfg('adminPass'),mp=await cfg('managerPass');
-  if(G.selRole==='admin'&&p===ap)G.role='admin';
-  else if(G.selRole==='manager'&&p===mp)G.role='manager';
+  const al=await cfg('adminLogin'),ap=await cfg('adminPass');
+  const ml=await cfg('managerLogin'),mp=await cfg('managerPass');
+  const uL=u.toLowerCase();
+  if(uL===String(al).toLowerCase()&&p===ap)G.role='admin';
+  else if(uL===String(ml).toLowerCase()&&p===mp)G.role='manager';
   else{document.getElementById('lerr').style.display='block';return;}
   document.getElementById('lerr').style.display='none';
   document.getElementById('lpass').value='';
+  document.getElementById('llogin').value='';
   // Remember for 7 days
   localStorage.setItem('crm_role',G.role);
   localStorage.setItem('crm_role_exp',Date.now()+7*864e5);
@@ -832,7 +834,7 @@ async function renderStrip(entries,svc,rates,dvOv){
     extra=`<div class="sc"><span class="sv b">₴${fmt(totalDep)}</span><span class="sl">Депозити</span></div>
       <div class="sc"><span class="sv b">₴${fmt(avgDep)}</span><span class="sl">Сер.депозит</span></div>
       <div class="sc"><span class="sv">₴${fmt(totalExp)}</span><span class="sl">Витрати</span></div>
-      ${totalStolen>0?`<div class="sc"><span class="sv r">₴${fmt(totalStolen)}</span><span class="sl">🩸 Вкрадено</span></div>`:''}
+      ${totalStolen>0?`<div class="sc"><span class="sv r">₴${fmt(totalStolen)}</span><span class="sl">Вкрадено</span></div>`:''}
       ${rateUSD>0?`<div class="sc"><span class="sv g">₴${fmt(rev)}</span><span class="sl">Дохід</span></div>
       <div class="sc"><span class="sv ${net>=0?'g':'r'}">₴${fmt(net)}</span><span class="sl">Прибуток</span></div>`:''}`;
   } else {
@@ -1351,7 +1353,7 @@ async function renderStats(){
             <div class="er"><span class="el">👥 Витрати на дроповодів</span><span>${fmtBoth(s.dvCosts)}</span></div>
             <div class="er"><span class="el">👤 Виплати дропам</span><span>${fmtBoth(s.dropCosts)}</span></div>
             <div class="er"><span class="el">🎰 Депозити (всі записи)</span><span>${fmtBoth(s.deposits)}</span></div>
-            ${s.stolen>0?`<div class="er"><span class="el" style="color:var(--red)">🩸 Вкрадено</span><span style="color:var(--red)">${fmtBoth(s.stolen)}</span></div>`:''}
+            ${s.stolen>0?`<div class="er"><span class="el" style="color:var(--red)">Вкрадено</span><span style="color:var(--red)">${fmtBoth(s.stolen)}</span></div>`:''}
             <div class="er" style="font-weight:700;color:var(--text)"><span class="el" style="color:var(--text)">Разом витрати</span><span>${fmtBoth(s.totalExp)}</span></div>
           </div>
           <div class="sr">
@@ -1741,8 +1743,9 @@ async function renderCfg(){
   const dvSet=[...new Set(all.map(e=>e.dropovod).filter(Boolean))];
   const svcs=s.services||DEF.services,types=s.svcTypes||DEF.svcTypes,rates=s.expRates||DEF.expRates,dvOv=s.dvOverrides||{};
   body.innerHTML=`
-  <div class="ccard"><h3>🔑 Паролі</h3>
-    <div class="frow"><div class="fg"><label>Адмін</label><input id="sap" class="inp" type="password" value="${s.adminPass||''}"></div><div class="fg"><label>Менеджер</label><input id="smp" class="inp" type="password" value="${s.managerPass||''}"></div></div>
+  <div class="ccard"><h3>🔑 Доступи</h3>
+    <div class="frow"><div class="fg"><label>Логін адміна</label><input id="sal" class="inp" value="${(s.adminLogin!==undefined?s.adminLogin:'admin')}"></div><div class="fg"><label>Пароль адміна</label><input id="sap" class="inp" type="password" value="${s.adminPass||''}"></div></div>
+    <div class="frow"><div class="fg"><label>Логін менеджера</label><input id="sml" class="inp" value="${(s.managerLogin!==undefined?s.managerLogin:'Veizy02')}"></div><div class="fg"><label>Пароль менеджера</label><input id="smp" class="inp" type="password" value="${s.managerPass||''}"></div></div>
     <button class="btn sm" onclick="savePasswords()">Зберегти</button>
   </div>
   <div class="ccard"><h3>🎰 Сервіси</h3>
@@ -1785,9 +1788,11 @@ async function renderCfg(){
 }
 
 async function savePasswords(){
+  await setCfg('adminLogin',(document.getElementById('sal').value||'').trim());
   await setCfg('adminPass',document.getElementById('sap').value);
+  await setCfg('managerLogin',(document.getElementById('sml').value||'').trim());
   await setCfg('managerPass',document.getElementById('smp').value);
-  showToast('✅ Паролі збережено');
+  showToast('✅ Доступи збережено');
 }
 
 async function saveRates(){
@@ -2268,8 +2273,20 @@ async function pollSync(){
   }catch(ex){}
 }
 
+async function migrateAccess(){
+  // Одноразово: завести логіни і виставити пароль менеджера Veizy02 (якщо ще не налаштовано)
+  try{
+    const rows=await _sbFetch('settings?key=eq.managerLogin&select=key')||[];
+    if(!rows.length){
+      await setCfg('adminLogin','admin');
+      await setCfg('managerLogin','Veizy02');
+      await setCfg('managerPass','Veizy02');
+    }
+  }catch(e){}
+}
 async function init(){
   await fetchUsdRate();
+  await migrateAccess();
   await seedBlacklist();
   initRealtime();
   setInterval(pollSync,5000);
