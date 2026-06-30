@@ -1064,7 +1064,7 @@ async function openNoteForm(id){
       <div><label class="cmodal-lbl">Пароль</label><input id="nf-pwd" class="inp" value="${_attrEsc(n.password)}"></div></div>
     <label class="cmodal-lbl">Силка</label><div class="nf-link-row"><input id="nf-link" class="inp" placeholder="https://..." value="${_attrEsc(n.link)}"><button type="button" class="btn ghost sm" id="nf-link-copy" title="Копіювати">📋</button></div>
     <label class="cmodal-lbl">Канали</label><input id="nf-channels" class="inp" value="${_attrEsc(n.channels)}">
-    <label class="cmodal-lbl">Креативи (фото)</label>
+    <label class="cmodal-lbl">Креативи (фото · вставка Ctrl+V)</label>
     <div id="nf-crea" class="nf-crea"></div>
     <button class="btn ghost sm" id="nf-addphoto" style="align-self:flex-start">📷 Додати фото</button>
     <div class="frow2"><div><label class="cmodal-lbl">Статус</label><select id="nf-status" class="inp">${stOpts}</select></div>
@@ -1084,12 +1084,13 @@ async function openNoteForm(id){
     c.querySelectorAll('.nf-thumb-x').forEach(el=>el.onclick=()=>{crea.splice(+el.dataset.i,1);renderCrea();});
   }
   renderCrea();
+  _pasteTarget={type:'note',add:(d)=>{crea.push(d);renderCrea();}}; // Ctrl+V додає креатив
   ov.querySelector('#nf-addphoto').onclick=()=>{
     const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.setAttribute('capture','environment');
     inp.onchange=async()=>{const f=inp.files&&inp.files[0];if(!f)return;try{showToast('⏳ Фото...');const data=await _compressImg(f);crea.push(data);renderCrea();}catch(x){showToast('❌ Фото');}};
     inp.click();
   };
-  const close=()=>ov.remove();
+  const close=()=>{_pasteTarget=null;ov.remove();};
   ov.querySelector('#nf-x').onclick=close;ov.querySelector('#nf-cancel').onclick=close;
   ov.onclick=e=>{if(e.target===ov)close();};
   ov.querySelector('#nf-link-copy').onclick=()=>{const v=(ov.querySelector('#nf-link').value||'').trim();if(v)cpText(encodeURIComponent(v));else showToast('Порожньо');};
@@ -1892,6 +1893,7 @@ async function cellCtx(ev,id,field){
   const cc=e.cellColors||{};
   const pal=document.createElement('div');
   pal.className='cpal';_cpal=pal;
+  _pasteTarget={type:'cell',id,field}; // дозволяємо Ctrl+V для цієї клітинки поки меню відкрите
   CPAL_COLORS.forEach(({cls,bg})=>{
     const d=document.createElement('div');
     d.className='cpal-dot'+(cc[field]===cls?' selected':'');
@@ -1913,7 +1915,7 @@ async function cellCtx(ev,id,field){
   const hasPhoto=!!(e.cellPhotos&&e.cellPhotos[field]);
   const phBtn=document.createElement('div');
   phBtn.className='cpal-dot cpal-ph';phBtn.style.background='#0ea5e9';phBtn.textContent='📷';
-  phBtn.title=hasPhoto?'Замінити фото':'Додати фото';
+  phBtn.title=(hasPhoto?'Замінити фото':'Додати фото')+' (або Ctrl+V)';
   phBtn.onclick=()=>{pal.remove();_cpal=null;attachPhoto(id,field);};
   pal.appendChild(phBtn);
   if(hasPhoto){
@@ -1987,11 +1989,41 @@ async function viewPhoto(id,field){
     close();renderSvc();showToast('🗑 Фото видалено');
   };
 }
+// ── ВСТАВКА ФОТО З БУФЕРА (Ctrl+V) ──
+let _pasteTarget=null; // {type:'cell',id,field} | {type:'note',add:fn}
+function _pasteImageFile(e){
+  const dt=e.clipboardData||window.clipboardData;
+  const items=(dt&&dt.items)||[];
+  for(const it of items){if(it.type&&it.type.indexOf('image')===0){const f=it.getAsFile();if(f)return f;}}
+  return null;
+}
+async function _onGlobalPaste(e){
+  if(!_pasteTarget)return;
+  const f=_pasteImageFile(e);
+  if(!f)return;
+  e.preventDefault();
+  try{
+    showToast('⏳ Фото...');
+    const data=await _compressImg(f);
+    if(_pasteTarget.type==='note'){_pasteTarget.add(data);showToast('📷 Фото вставлено');}
+    else if(_pasteTarget.type==='cell'){
+      const{id,field}=_pasteTarget;
+      const en=await db.get('entries',id);if(!en){showToast('❌ Запис');return;}
+      const ph=en.cellPhotos||{};ph[field]=data;en.cellPhotos=ph;
+      await db.put('entries',en);
+      if(_cpal){_cpal.remove();_cpal=null;}
+      _pasteTarget=null;
+      renderSvc();showToast('📷 Фото вставлено');
+    }
+  }catch(x){showToast('❌ Не вдалося вставити фото');}
+}
+document.addEventListener('paste',_onGlobalPaste);
 // Capture phase for palette close — same pattern as ctx menu
 document.addEventListener('click',e=>{
   if(_cpal){
     if(!_cpal.contains(e.target)){
       _cpal.remove();_cpal=null;
+      if(_pasteTarget&&_pasteTarget.type==='cell')_pasteTarget=null;
       _ctxCooldown=true;setTimeout(()=>{_ctxCooldown=false;},350);
       e.stopPropagation();
     }
