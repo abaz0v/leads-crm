@@ -182,7 +182,7 @@ tr.sel-row>td.ccell{outline:2px solid rgba(59,130,246,.7);outline-offset:-2px}
 .cpal{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);z-index:950;padding:8px;display:flex;gap:5px;flex-wrap:wrap;width:168px}
 .cpal-dot{width:22px;height:22px;border-radius:5px;cursor:pointer;border:2px solid transparent;transition:.15s}.cpal-dot:hover{border-color:var(--text);transform:scale(1.15)}
 .cpal-ph{display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
-.phdot{cursor:pointer;font-size:10px;margin-left:3px;vertical-align:middle;opacity:.9}.phdot:hover{opacity:1}
+.phdot{cursor:pointer;font-size:13px;margin-left:4px;padding:2px;vertical-align:middle;opacity:.95}.phdot:hover{opacity:1}
 .phov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px}
 .phov img{max-width:96vw;max-height:84vh;border-radius:8px;object-fit:contain;box-shadow:var(--shadow)}
 .phov-bar{display:flex;gap:8px;margin-bottom:10px}
@@ -1921,6 +1921,16 @@ async function cellCtx(ev,id,field){
     vBtn.className='cpal-dot cpal-ph';vBtn.style.background='#334155';vBtn.textContent='👁';vBtn.title='Переглянути фото';
     vBtn.onclick=()=>{pal.remove();_cpal=null;viewPhoto(id,field);};
     pal.appendChild(vBtn);
+    const dBtn=document.createElement('div');
+    dBtn.className='cpal-dot cpal-ph';dBtn.style.background='var(--red)';dBtn.textContent='🗑';dBtn.title='Видалити фото';
+    dBtn.onclick=async()=>{
+      pal.remove();_cpal=null;
+      if(!confirm('Видалити фото?'))return;
+      const e2=await db.get('entries',id);
+      if(e2&&e2.cellPhotos){delete e2.cellPhotos[field];await db.put('entries',e2);}
+      renderSvc();showToast('🗑 Фото видалено');
+    };
+    pal.appendChild(dBtn);
   }
   const _pz=parseFloat(getComputedStyle(document.documentElement).zoom)||1;
   pal.style.left=Math.min(ev.clientX/_pz,(window.innerWidth/_pz)-150)+'px';
